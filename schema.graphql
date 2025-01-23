@@ -1,0 +1,40 @@
+# response & request
+type CommonResponse {
+    code: String!
+    success: Boolean!
+    message: String!
+}
+
+input UserRegisterRequest {
+    username: String!
+    email: String!
+    password: String!
+    fullname: String!
+}
+
+type UserRegisterResponse {
+    response: CommonResponse
+    token: String!
+}
+
+type LoginResponse {
+    response: CommonResponse
+    token: String!
+}
+
+# models
+type User {
+    fullname: String!
+}
+
+# action
+
+type Query {
+    profile: User
+}
+
+type Mutation {
+    register(user: UserRegisterRequest): UserRegisterResponse
+    login(username: String!, password: String!): LoginResponse
+    logout(token: String!): CommonResponse
+}

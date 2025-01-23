@@ -1,15 +1,28 @@
 {
-  "name": "encore-ts-starter",
+  "name": "graphql-eccommerce",
   "private": true,
   "version": "0.0.1",
-  "description": "Encore Typescript Starter",
+  "description": "My implementation of graphql in e-commerce",
   "license": "MPL-2.0",
   "type": "module",
+  "scripts": {
+    "encore": "encore run",
+    "generate": "graphql-codegen --config codegen.yml"
+  },
   "devDependencies": {
     "@types/node": "^20.5.7",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "@graphql-codegen/cli": "^5.0.3",
+    "@graphql-codegen/typescript": "2.8.8",
+    "@graphql-codegen/typescript-resolvers": "2.7.13"
   },
   "dependencies": {
-    "encore.dev": "^1.46.0"
+    "encore.dev": "^1.46.0",
+    "@apollo/server": "^4.11.0",
+    "graphql": "^16.9.0",
+    "graphql-tag": "^2.12.6",
+    "knex": "^3.1.0",
+    "pg": "^8.13.1",
+    "ts-jose": "^5.9.6"
   }
 }
