@@ -62,18 +62,7 @@ export const login = api(
             throw new APIError(ErrCode.InvalidArgument, "username or password is invalid")
         }
 
-        const payload: JWTPayload = {
-            sub: packageJson.name,
-            iss: packageJson.name,
-            iat: Date.now(),
-            exp: Date.now() + 2 * 60 * 60 * 1000, // 2 hour
-            claims: {
-                user_id: user.id,
-                user_name: username,
-            }
-        }
-
-        const token = await JWT.sign(payload, jwk)
+        const token = await generateToken(user)
         return { token }
     }
 )
