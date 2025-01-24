@@ -2,9 +2,10 @@ import { Context } from "../graphql";
 import { APIError, ErrCode } from "encore.dev/api";
 import { QueryResolvers, User } from "../__generated__/resolvers-types";
 import { authentication, user } from "~encore/clients";
+import { parseResolveInfo } from "graphql-parse-resolve-info";
 
 const queries: QueryResolvers<Context> = {
-    profile: async(_, __, context: Context): Promise<User> => {
+    profile: async(_, __, context: Context, info): Promise<User> => {
         try {
             const userClaims = await authentication.verify({token: context.token?? ""})
 
@@ -19,7 +20,13 @@ const queries: QueryResolvers<Context> = {
                 }
             }
 
-            const profile = await user.getSingleUser({username: userClaims.claims.user_name})
+            let selects: string[] | undefined = undefined
+            const parsedResolveInfo = parseResolveInfo(info)
+            if (parsedResolveInfo) {
+                selects = (Object.keys(parsedResolveInfo.fieldsByTypeName.User)).filter((field) => field !== 'response');
+            }
+
+            const profile = await user.getSingleUser({username: userClaims.claims.user_name, fields: selects})
 
             return {
                 response: {
