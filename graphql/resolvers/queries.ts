@@ -4,6 +4,7 @@ import { QueryResolvers, User } from "../__generated__/resolvers-types";
 
 const queries: QueryResolvers<Context> = {
     profile: async(): Promise<User> => {
+        // TODO
         return {fullname: "aw man"}
     },
 };

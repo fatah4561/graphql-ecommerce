@@ -24,7 +24,12 @@ type LoginResponse {
 
 # models
 type User {
-    fullname: String!
+    id: ID
+    username: String
+    fullname: String
+    email: String
+    created_at: String
+    updated_at: String
 }
 
 # action
