@@ -30,10 +30,11 @@ type User {
     email: String
     created_at: String
     updated_at: String
+
+    response: CommonResponse
 }
 
 # action
-
 type Query {
     profile: User
 }

@@ -1,28 +1,16 @@
 import { api, APIError, ErrCode } from "encore.dev/api"
 import {JWK, JWT, JWTPayload, JWKGenerateOptions} from "ts-jose"
 import packageJson from '../package.json'
-import { User, UserRegisterRequest } from "../graphql/__generated__/resolvers-types"
-import { SQLDatabase } from "encore.dev/storage/sqldb"
+import { UserRegisterRequest } from "../graphql/__generated__/resolvers-types"
 import { compareSync, genSaltSync, hashSync } from "bcrypt-ts"
-import knex from "knex"
 
-const UserDB = new SQLDatabase("user", {
-    migrations: "./migrations"
-})
+import { UserEntity, Users } from "../user/db"
 
-const orm = knex({
-    client: "pg",
-    connection: UserDB.connectionString,
-})
+const salt = genSaltSync(10);
 
-type UserEntity = User&{password_hash: string};
-const Users = () => orm<UserEntity>("users");
+const jwk = await generateKeyPair() // TODO! maybe use encore secret next time? yes fix this
 
-const salt = genSaltSync(10); // TODO? i think this will make old password invalid on re deploy -.-
-
-const jwk = await generateKeyPair() // TODO? maybe use encore secret next time?
-
-interface Claims {
+export interface Claims {
     user_id: string,
     user_name: string,
 }
@@ -51,14 +39,14 @@ export const login = api(
     async ({username, password}: {username: string, password: string}): Promise<{ token: string }> => {
         const user = await Users().
         where("username", username).
-        select("id", "password_hash").
+        select("id", "username", "password_hash").
         first()
 
         if (!user) {
             throw new APIError(ErrCode.InvalidArgument, "username " + username + " not found")
         }
 
-        if (!compareSync(password, user.password_hash)) {
+        if (!compareSync(password, user.password_hash??"")) {
             throw new APIError(ErrCode.InvalidArgument, "username or password is invalid")
         }
 
@@ -69,18 +57,17 @@ export const login = api(
 
 export const verify = api(
     { method: "POST", path: "/verify" },
-    async ({token}: {token: string}): Promise<{user?: string}> => {
+    async ({token}: {token: string}): Promise<{claims: Claims}> => {
         const payload = await JWT.verify(token, jwk)
         const claims = payload.claims as Claims
 
-        return {user: claims.user_name}
+        return {claims}
     }
 )
 
 async function generateKeyPair(): Promise<JWK> {
     const option: JWKGenerateOptions = { use: "sig", modulusLength: 2048}
-    const key = await JWK.generate("RS256", option)
-    return key
+    return await JWK.generate("RS256", option)
 }
 
 async function generateToken(user: UserEntity): Promise<string> {

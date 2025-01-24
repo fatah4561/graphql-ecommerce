@@ -3,7 +3,7 @@ import { LoginResponse, MutationResolvers, UserRegisterRequest, UserRegisterResp
 import { APIError } from "encore.dev/api";
 
 const mutations: MutationResolvers = {
-    register: async (__dirname, { user }: any): Promise<UserRegisterResponse> => {
+    register: async (_, { user }: any): Promise<UserRegisterResponse> => {
         try {
             const request = user as UserRegisterRequest
             const res = await authentication.register({ request })
@@ -28,12 +28,11 @@ const mutations: MutationResolvers = {
                 token: res.token
             }
         } catch (err) {
-            const message = (err as Error).message
             const apiError = err as APIError
             return {
                 response: {
                     code: apiError.code,
-                    message: message,
+                    message: apiError.message,
                     success: false
                 }, token: ""
             };
