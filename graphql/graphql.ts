@@ -44,7 +44,7 @@ export const graphqlAPI = api.raw(
         for (const [key, value] of httpGraphqlResponse.headers) {
             res.setHeader(key, value);
         }
-        res.statusCode = httpGraphqlResponse.status || 200;
+        res.statusCode = httpGraphqlResponse.status ?? 200;
 
         if (httpGraphqlResponse.body.kind === "complete") {
             res.end(httpGraphqlResponse.body.string);
