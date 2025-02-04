@@ -1,0 +1,24 @@
+import { api, APIError, ErrCode } from "encore.dev/api"
+import { UserEntity, Users } from "./db"
+
+export const getSingleUser = api(
+    { method: "POST", path: "/user:username" },
+    async ({username, fields}: {username: string, fields?: Array<string>}): Promise<{user: UserEntity}> => {
+        const query = Users().
+        where("username", username)
+        
+        if (fields) {
+            query.column(fields)
+        }
+        
+        const user = await query.
+        select<UserEntity>().
+        first()
+
+        if (!user) {
+            throw new APIError(ErrCode.NotFound, "User not found")
+        }
+
+        return {user: user?? null}
+    }
+)
