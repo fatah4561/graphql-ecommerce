@@ -10,6 +10,10 @@ input UserRegisterRequest {
     email: String!
     password: String!
     fullname: String!
+    address: String
+    province_id: Int
+    city_id: Int
+    district_id: Int
 }
 
 type UserRegisterResponse {
@@ -26,12 +30,40 @@ type LoginResponse {
 type User {
     id: ID
     username: String
-    fullname: String
     email: String
     created_at: String
     updated_at: String
 
+    details: UserDetail
     response: CommonResponse
+}
+
+type UserDetail {
+    id: ID
+    user_id: ID
+    fullname: String
+    address: String
+    postal_code: String
+    province: Province
+    district: District
+    city: City
+    created_at: String
+    updated_at: String
+}
+
+type Province {
+    id: ID!
+    name: String!
+}
+
+type District {
+    id: ID!
+    name: String!
+}
+
+type City {
+    id: ID!
+    name: String!
 }
 
 # action

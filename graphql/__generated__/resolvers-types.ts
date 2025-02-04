@@ -14,11 +14,23 @@ export type Scalars = {
   Float: number;
 };
 
+export type City = {
+  __typename?: 'City';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+};
+
 export type CommonResponse = {
   __typename?: 'CommonResponse';
   code: Scalars['String'];
   message: Scalars['String'];
   success: Scalars['Boolean'];
+};
+
+export type District = {
+  __typename?: 'District';
+  id: Scalars['ID'];
+  name: Scalars['String'];
 };
 
 export type LoginResponse = {
@@ -50,6 +62,12 @@ export type MutationRegisterArgs = {
   user?: InputMaybe<UserRegisterRequest>;
 };
 
+export type Province = {
+  __typename?: 'Province';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
   profile?: Maybe<User>;
@@ -58,18 +76,36 @@ export type Query = {
 export type User = {
   __typename?: 'User';
   created_at?: Maybe<Scalars['String']>;
+  details?: Maybe<UserDetail>;
   email?: Maybe<Scalars['String']>;
-  fullname?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['ID']>;
   response?: Maybe<CommonResponse>;
   updated_at?: Maybe<Scalars['String']>;
   username?: Maybe<Scalars['String']>;
 };
 
+export type UserDetail = {
+  __typename?: 'UserDetail';
+  address?: Maybe<Scalars['String']>;
+  city?: Maybe<City>;
+  created_at?: Maybe<Scalars['String']>;
+  district?: Maybe<District>;
+  fullname?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['ID']>;
+  postal_code?: Maybe<Scalars['String']>;
+  province?: Maybe<Province>;
+  updated_at?: Maybe<Scalars['String']>;
+  user_id?: Maybe<Scalars['ID']>;
+};
+
 export type UserRegisterRequest = {
+  address?: InputMaybe<Scalars['String']>;
+  city_id?: InputMaybe<Scalars['Int']>;
+  district_id?: InputMaybe<Scalars['Int']>;
   email: Scalars['String'];
   fullname: Scalars['String'];
   password: Scalars['String'];
+  province_id?: InputMaybe<Scalars['Int']>;
   username: Scalars['String'];
 };
 
@@ -150,13 +186,18 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  City: ResolverTypeWrapper<City>;
   CommonResponse: ResolverTypeWrapper<CommonResponse>;
+  District: ResolverTypeWrapper<District>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
   LoginResponse: ResolverTypeWrapper<LoginResponse>;
   Mutation: ResolverTypeWrapper<{}>;
+  Province: ResolverTypeWrapper<Province>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
   User: ResolverTypeWrapper<User>;
+  UserDetail: ResolverTypeWrapper<UserDetail>;
   UserRegisterRequest: UserRegisterRequest;
   UserRegisterResponse: ResolverTypeWrapper<UserRegisterResponse>;
 }>;
@@ -164,21 +205,38 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean'];
+  City: City;
   CommonResponse: CommonResponse;
+  District: District;
   ID: Scalars['ID'];
+  Int: Scalars['Int'];
   LoginResponse: LoginResponse;
   Mutation: {};
+  Province: Province;
   Query: {};
   String: Scalars['String'];
   User: User;
+  UserDetail: UserDetail;
   UserRegisterRequest: UserRegisterRequest;
   UserRegisterResponse: UserRegisterResponse;
+}>;
+
+export type CityResolvers<ContextType = any, ParentType extends ResolversParentTypes['City'] = ResolversParentTypes['City']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type CommonResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['CommonResponse'] = ResolversParentTypes['CommonResponse']> = ResolversObject<{
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type DistrictResolvers<ContextType = any, ParentType extends ResolversParentTypes['District'] = ResolversParentTypes['District']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -194,18 +252,38 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   register?: Resolver<Maybe<ResolversTypes['UserRegisterResponse']>, ParentType, ContextType, Partial<MutationRegisterArgs>>;
 }>;
 
+export type ProvinceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Province'] = ResolversParentTypes['Province']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   profile?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
 }>;
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
   created_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  details?: Resolver<Maybe<ResolversTypes['UserDetail']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  fullname?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   response?: Resolver<Maybe<ResolversTypes['CommonResponse']>, ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   username?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type UserDetailResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserDetail'] = ResolversParentTypes['UserDetail']> = ResolversObject<{
+  address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
+  created_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  district?: Resolver<Maybe<ResolversTypes['District']>, ParentType, ContextType>;
+  fullname?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  postal_code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  province?: Resolver<Maybe<ResolversTypes['Province']>, ParentType, ContextType>;
+  updated_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  user_id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -216,11 +294,15 @@ export type UserRegisterResponseResolvers<ContextType = any, ParentType extends 
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  City?: CityResolvers<ContextType>;
   CommonResponse?: CommonResponseResolvers<ContextType>;
+  District?: DistrictResolvers<ContextType>;
   LoginResponse?: LoginResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  Province?: ProvinceResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+  UserDetail?: UserDetailResolvers<ContextType>;
   UserRegisterResponse?: UserRegisterResponseResolvers<ContextType>;
 }>;
 

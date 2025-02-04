@@ -4,7 +4,7 @@ import packageJson from '../package.json'
 import { UserRegisterRequest } from "../graphql/__generated__/resolvers-types"
 import { compareSync, genSaltSync, hashSync } from "bcrypt-ts"
 
-import { UserEntity, Users } from "../user/db"
+import { UserDetailEntity, UserDetails, UserEntity, Users } from "../user/db"
 
 const salt = genSaltSync(10);
 
@@ -21,7 +21,6 @@ export const register = api(
         const hashPass = hashSync(request.password, salt)
         const newUser: UserEntity = {
             username: request.username,
-            // fullname: request.fullname, // TODO add fullname to other table 
             email: request.email,
             password_hash: hashPass,
             created_at: (new Date()).toISOString(),
@@ -29,6 +28,21 @@ export const register = api(
         }
 
         const user = (await Users().insert(newUser, "*"))[0]
+
+        // insert detail
+        const newUserDetail: UserDetailEntity = {
+            user_id: user.id,
+            fullname: request.fullname,
+            address: request.address,
+            province_id: request.province_id ?? undefined,
+            city_id: request.city_id ?? undefined,
+            district_id: request.district_id ?? undefined,
+
+            created_at: (new Date()).toISOString(),
+            updated_at: (new Date()).toISOString(),
+        }
+        await UserDetails().insert(newUserDetail)
+
         const token = await generateToken(user)
         return {token}
     }
