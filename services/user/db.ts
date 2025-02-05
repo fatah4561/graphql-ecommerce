@@ -1,6 +1,6 @@
 import { SQLDatabase } from "encore.dev/storage/sqldb"
-import { User, UserDetail } from "../graphql/__generated__/resolvers-types"
 import knex from "knex"
+import { User, UserDetail } from "../../graphql/__generated__/resolvers-types"
 
 const UserDB = new SQLDatabase("user", {
     migrations: "./migrations"

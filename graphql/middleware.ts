@@ -1,7 +1,7 @@
 import { authentication } from "~encore/clients";
 import { APIError, ErrCode } from "encore.dev/api";
 import { Context } from "./graphql";
-import { Claims } from "../authentication/authentication";
+import { Claims } from "../services/authentication/authentication";
 
 export async function verifyToken(context: Context): Promise<Claims> {
     try {

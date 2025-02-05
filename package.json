@@ -1,8 +1,8 @@
 {
   "name": "graphql-eccommerce",
   "private": true,
-  "version": "0.0.1",
-  "description": "My implementation of graphql in e-commerce",
+  "version": "0.0.2",
+  "description": "My implementation of graphql in e-commerce (fatah4561)",
   "license": "MPL-2.0",
   "type": "module",
   "scripts": {
@@ -24,8 +24,8 @@
     "graphql": "^16.9.0",
     "graphql-parse-resolve-info": "^4.13.0",
     "graphql-tag": "^2.12.6",
+    "jose": "^5.9.6",
     "knex": "^3.1.0",
-    "pg": "^8.13.1",
-    "ts-jose": "^5.9.6"
+    "pg": "^8.13.1"
   }
 }
