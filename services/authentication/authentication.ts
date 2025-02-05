@@ -1,10 +1,10 @@
 import { api, APIError, ErrCode } from "encore.dev/api"
 import {JWK, JWT, JWTPayload, JWKGenerateOptions} from "ts-jose"
-import packageJson from '../package.json'
-import { UserRegisterRequest } from "../graphql/__generated__/resolvers-types"
+import packageJson from '../../package.json'
 import { compareSync, genSaltSync, hashSync } from "bcrypt-ts"
 
 import { UserDetailEntity, UserDetails, UserEntity, Users } from "../user/db"
+import { UserRegisterRequest } from "../../graphql/__generated__/resolvers-types"
 
 const salt = genSaltSync(10);
 
