@@ -1,14 +1,18 @@
 import { api, APIError, ErrCode } from "encore.dev/api"
-import {JWK, JWT, JWTPayload, JWKGenerateOptions} from "ts-jose"
 import packageJson from '../../package.json'
 import { compareSync, genSaltSync, hashSync } from "bcrypt-ts"
 
 import { UserDetailEntity, UserDetails, UserEntity, Users } from "../user/db"
 import { UserRegisterRequest } from "../../graphql/__generated__/resolvers-types"
+import { SignJWT, jwtVerify, generateKeyPair, exportPKCS8, importPKCS8, exportSPKI, importSPKI, KeyLike } from 'jose';
+import { secret } from "encore.dev/config"
+
+const jwkPublicKey = secret("JWK_PUBLIC_KEY")
+const jwkPrivateKey = secret("JWK_PRIVATE_KEY")
 
 const salt = genSaltSync(10);
 
-const jwk = await generateKeyPair() // TODO! maybe use encore secret next time? yes fix this
+const {publicKey, privateKey} = await getKey()
 
 export interface Claims {
     user_id: string,
@@ -72,29 +76,50 @@ export const login = api(
 export const verify = api(
     { method: "POST", path: "/verify" },
     async ({token}: {token: string}): Promise<{claims: Claims}> => {
-        const payload = await JWT.verify(token, jwk)
-        const claims = payload.claims as Claims
+        const { payload } = await jwtVerify(token, publicKey, {
+            issuer: packageJson.name,
+            audience: packageJson.name,
+        })
+        const claims: Claims = { 
+            user_id: payload.user_id as string,
+            user_name: payload.user_name as string,
+        }
 
         return {claims}
     }
 )
 
-async function generateKeyPair(): Promise<JWK> {
-    const option: JWKGenerateOptions = { use: "sig", modulusLength: 2048}
-    return await JWK.generate("RS256", option)
+async function getKey(): Promise<{publicKey: KeyLike, privateKey: KeyLike}> {
+    if (jwkPublicKey() && jwkPrivateKey()) {
+        const ecPublicKey = await importSPKI(jwkPublicKey(), 'PS256')
+        const ecPrivateKey = await importPKCS8(jwkPrivateKey(), 'PS256')
+
+        return {publicKey: ecPublicKey, privateKey: ecPrivateKey}
+    }
+    
+    const { publicKey, privateKey } = await generateKeyPair('PS256')
+    console.warn("WARNING!! using newly generated key, encore secret is not set")
+
+    const pkcs8Pem = await exportPKCS8(privateKey)
+    console.log(pkcs8Pem)
+
+    const spki = await exportSPKI(publicKey)
+    console.log(spki)
+
+    return { publicKey, privateKey }
 }
 
 async function generateToken(user: UserEntity): Promise<string> {
-    const payload: JWTPayload = {
-        sub: packageJson.name,
-        iss: packageJson.name,
-        iat: Date.now(),
-        exp: Date.now() + 2 * 60 * 60 * 1000, // 2 hour
-        claims: {
-            user_id: user.id,
-            user_name: user.username,
-        }
-    }
-
-    return await JWT.sign(payload, jwk)
+    return await new SignJWT({ 
+            'user_id': user.id,
+            'user_name': user.username,
+        }).
+        setProtectedHeader({
+            alg: "RS256"
+        }).
+        setIssuedAt().
+        setIssuer(packageJson.name).
+        setAudience(packageJson.name).
+        setExpirationTime('4h').
+        sign(privateKey)
 }
