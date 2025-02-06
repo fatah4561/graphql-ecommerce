@@ -3,8 +3,11 @@ import { ApolloServer, HeaderMap } from "@apollo/server";
 import { readFileSync } from "node:fs";
 import { json } from "node:stream/consumers";
 import resolvers from "./resolvers";
+import packageJson from "../package.json";
+import { CommonResponse } from "./__generated__/resolvers-types";
 
 const typeDefs = readFileSync("./schema.graphql", { encoding: "utf-8"});
+const version = packageJson.version
 
 export interface Context {
     token?: string;
@@ -27,6 +30,18 @@ export const graphqlAPI = api.raw(
             if (value !== undefined) {
                 headers.set(key, Array.isArray(value) ? value.join(", ") : value);
             }
+        }
+
+        if (req.method === "GET") { // requesting base endpoint
+            res.setHeader("Content-Type", "application/json");
+
+            const body: CommonResponse = {
+                code: "success",
+                message: "graphql e-commerce by fatah4561 v" + version,
+                success: true
+            }
+            res.end(JSON.stringify(body));
+            return
         }
 
         const httpGraphqlResponse = await server.executeHTTPGraphQLRequest({
