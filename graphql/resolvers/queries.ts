@@ -39,6 +39,7 @@ const queries: QueryResolvers<Context> = {
         }
 
     },
+    // TODO get shops
 };
 
 export default queries

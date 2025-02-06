@@ -5,6 +5,19 @@ type CommonResponse {
     message: String!
 }
 
+input PaginationRequest {
+    limit: Int
+    start_key: Int
+    total_data: Int
+}
+
+type PaginationResponse {
+    limit: Int
+    previous_key: Int
+    next_key: Int
+    total_data: Int
+}
+
 input UserRegisterRequest {
     username: String!
     email: String!
@@ -26,9 +39,29 @@ type LoginResponse {
     token: String!
 }
 
+input SaveShopRequest {
+    name: String!
+    description: String
+    address: String
+    province_id: Int!
+    district_id: Int!
+    city_id: Int!
+    postal_code: Int!
+    coordinate: String!
+    icon: String
+    opened_at: String
+    closed_at: String
+}
+
+type GetShopsResponse {
+    shops: [Shop]
+    pagination: PaginationResponse
+    response: CommonResponse
+}
+
 # models
 type User {
-    id: ID
+    id: Int
     username: String
     email: String
     created_at: String
@@ -39,8 +72,8 @@ type User {
 }
 
 type UserDetail {
-    id: ID
-    user_id: ID
+    id: Int
+    user_id: Int
     fullname: String
     address: String
     postal_code: String
@@ -52,27 +85,50 @@ type UserDetail {
 }
 
 type Province {
-    id: ID!
+    id: Int!
     name: String!
 }
 
 type District {
-    id: ID!
+    id: Int!
     name: String!
 }
 
 type City {
-    id: ID!
+    id: Int!
     name: String!
+}
+
+type Shop {
+    id: Int
+    user_id: Int!
+    name: String!
+    description: String
+    address: String
+    province_id: Int!
+    district_id: Int!
+    city_id: Int!
+    postal_code: Int!
+    coordinate: String!
+    icon: String
+    opened_at: String
+    closed_at: String
+    created_at: String
+    updated_at: String
 }
 
 # action
 type Query {
     profile: User
+    shops(pagination: PaginationRequest, q: String): GetShopsResponse
 }
 
 type Mutation {
+    # auth
     register(user: UserRegisterRequest): UserRegisterResponse
     login(username: String!, password: String!): LoginResponse
     logout(token: String!): CommonResponse
+
+    # shop
+    save_shop(shop: SaveShopRequest): GetShopsResponse
 }
