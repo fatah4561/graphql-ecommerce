@@ -1,16 +1,17 @@
 import { api, APIError, ErrCode } from "encore.dev/api"
 import packageJson from '../../package.json'
-import { compareSync, genSaltSync, hashSync } from "bcrypt-ts"
+import { compare, genSalt, hash } from "bcrypt-ts"
 
 import { UserDetailEntity, UserDetails, UserEntity, Users } from "../user/db"
 import { UserRegisterRequest } from "../../graphql/__generated__/resolvers-types"
 import { SignJWT, jwtVerify, generateKeyPair, exportPKCS8, importPKCS8, exportSPKI, importSPKI, KeyLike } from 'jose';
 import { secret } from "encore.dev/config"
 
+// TODO? maybe use ES256 (ECDSA) or EdDSA for smaller bandwidth with equivalent security of RS256, PS256 but also faster
 const jwkPublicKey = secret("JWK_PUBLIC_KEY")
 const jwkPrivateKey = secret("JWK_PRIVATE_KEY")
 
-const salt = genSaltSync(10);
+const salt = await genSalt(10);
 
 const {publicKey, privateKey} = await getKey()
 
@@ -22,7 +23,7 @@ export interface Claims {
 export const register = api(
     { method: "POST", path: "/register"},
     async({request}: {request: UserRegisterRequest}): Promise<{token: string}> => {
-        const hashPass = hashSync(request.password, salt)
+        const hashPass = await hash(request.password, salt)
         const newUser: UserEntity = {
             username: request.username,
             email: request.email,
@@ -64,7 +65,7 @@ export const login = api(
             throw new APIError(ErrCode.InvalidArgument, "username " + username + " not found")
         }
 
-        if (!compareSync(password, user.password_hash??"")) {
+        if (! await compare(password, user.password_hash??"")) {
             throw new APIError(ErrCode.InvalidArgument, "username or password is invalid")
         }
 
