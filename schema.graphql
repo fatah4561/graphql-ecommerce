@@ -8,7 +8,6 @@ type CommonResponse {
 input PaginationRequest {
     limit: Int
     start_key: Int
-    total_data: Int
 }
 
 type PaginationResponse {

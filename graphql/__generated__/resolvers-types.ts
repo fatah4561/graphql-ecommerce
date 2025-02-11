@@ -78,7 +78,6 @@ export type MutationSave_ShopArgs = {
 export type PaginationRequest = {
   limit?: InputMaybe<Scalars['Int']>;
   start_key?: InputMaybe<Scalars['Int']>;
-  total_data?: InputMaybe<Scalars['Int']>;
 };
 
 export type PaginationResponse = {

@@ -5,29 +5,47 @@ import { UserEntity } from "../user/db"
 import { isValidTimeFormat } from "../../helpers/time"
 import packageJson from "../../package.json"
 
+export interface GetShopParams extends PaginationRequest {
+    q: string
+    fields?: string
+}
+
 export const getShops = api(
     { method: "GET", path: "/shops" },
-    async ({ pagination, q, fields }: { pagination: PaginationRequest, q: string, fields?: Array<string> }): Promise<({ shops: Array<ShopEntity> })> => {
-
+    async (params: GetShopParams): Promise<({ shops: ShopEntity[] })> => {
         // keyset pagination
         const query = Shops()
             .orderBy("id", "asc")
-            .where("id", ">", pagination.start_key ?? 0)
-            .limit(pagination.limit ?? 1)
+            .where("id", ">", params.start_key ?? 0)
+            .limit(params.limit ?? 1)
 
-        // search
-        if (q) {
+        if (params.q) {
             query.andWhere(function () {
-                this.whereILike("name", q ?? "").orWhereILike("description", q ?? "")
+                this.whereILike("name", params.q ?? "").orWhereILike("description", params.q ?? "")
             })
         }
 
-        if (fields) {
-            query.column(fields)
+        if (params.fields) {
+            query.column(params.fields.split(","))
         }
 
+        console.log(params.limit)
+        console.log(query.select<ShopEntity[]>().toSQL())
+
         const shops: ShopEntity[] = await query.select<ShopEntity[]>()
-        return { shops }
+        return {
+            shops: shops.map(shop => ({
+                id: shop.id,
+                name: shop.name ?? "",
+                user_id: shop.user_id ?? 0,
+                postal_code: shop.postal_code ?? 0,
+                province_id: shop.province_id ?? 0,
+                coordinate: shop.coordinate ?? "",
+                city_id: shop.city_id ?? 0,
+                district_id: shop.district_id ?? 0,
+            }))
+        };
+
     }
 )
 
@@ -35,6 +53,7 @@ export const saveShop = api(
     { method: "POST", path: "/shop" },
     async ({ shop, user }: { shop: SaveShopRequest, user: UserEntity }): Promise<{ savedShop: ShopEntity }> => {
         // TODO file save for shop icon
+        // validation
         if (!user.id) {
             throw new APIError(ErrCode.PermissionDenied, "User is empty")
         }
@@ -48,6 +67,7 @@ export const saveShop = api(
             throw new APIError(ErrCode.InvalidArgument, "Invalid time format for opened_at")
         }
         shop.closed_at = shop.closed_at ? shop.closed_at + packageJson["app-config"].timezone : "00:00:00+0000"
+        // --end validation
 
         const shopRequest: ShopEntity = {
             user_id: user.id ?? 0,
