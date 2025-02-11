@@ -29,9 +29,6 @@ export const getShops = api(
             query.column(params.fields.split(","))
         }
 
-        console.log(params.limit)
-        console.log(query.select<ShopEntity[]>().toSQL())
-
         const shops: ShopEntity[] = await query.select<ShopEntity[]>()
         return {
             shops: shops.map(shop => ({
