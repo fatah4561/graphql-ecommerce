@@ -7,7 +7,6 @@ import packageJson from "../package.json";
 import { BaseResponse } from "./__generated__/resolvers-types";
 import { join } from "node:path";
 
-// const typeDefs = readFileSync("./schema.graphql", { encoding: "utf-8"});
 const typeDefs = readdirSync("./schema")
   .filter(file => file.endsWith(".graphql")) // Get only .graphql files
   .map(file => readFileSync(join("./schema", file), { encoding: "utf-8" })); // Read them
