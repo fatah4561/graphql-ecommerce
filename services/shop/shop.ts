@@ -12,12 +12,8 @@ export interface GetShopParams extends PaginationRequest {
 
 export const getShops = api(
     { method: "GET", path: "/shops" },
-    async (params: GetShopParams): Promise<({ shops: ShopEntity[] })> => {
-        // keyset pagination
+    async (params: GetShopParams): Promise<({ shops: ShopEntity[], total: number })> => {
         const query = Shops()
-            .orderBy("id", "asc")
-            .where("id", ">", params.start_key ?? 0)
-            .limit(params.limit ?? 1)
 
         if (params.q) {
             query.andWhere(function () {
@@ -25,11 +21,23 @@ export const getShops = api(
             })
         }
 
+        // count total
+        const totalQuery = query.clone().count('id')
+
+        // keyset pagination
+        const paginationQuery = query.clone().orderBy("id", "asc")
+            .where("id", ">=", params.start_key ?? 0)
+            .limit(params.limit ?? 1)
+
         if (params.fields) {
-            query.column(params.fields.split(","))
+            paginationQuery.column(params.fields.split(","))
         }
 
-        const shops: ShopEntity[] = await query.select<ShopEntity[]>()
+        const [totalResult, shops] = await Promise.all([
+            totalQuery,
+            paginationQuery.select<ShopEntity[]>()
+        ])
+
         return {
             shops: shops.map(shop => ({
                 id: shop.id,
@@ -40,7 +48,8 @@ export const getShops = api(
                 coordinate: shop.coordinate ?? "",
                 city_id: shop.city_id ?? 0,
                 district_id: shop.district_id ?? 0,
-            }))
+            })),
+            total: Number(totalResult[0].count)
         };
 
     }

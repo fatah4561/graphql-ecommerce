@@ -5,6 +5,7 @@ import { shop, user } from "~encore/clients";
 import { parseResolveInfo, ResolveTree } from "graphql-parse-resolve-info";
 import { verifyToken } from "../middleware";
 import { GetShopParams } from "../../services/shop/shop";
+import { getPagination } from "../../helpers/pagination";
 
 const queries: QueryResolvers<Context> = {
     profile: async (_, __, context: Context, info): Promise<User> => {
@@ -57,14 +58,27 @@ const queries: QueryResolvers<Context> = {
                 }
             }
 
-            const { shops } = await shop.getShops(req)
+            const { shops, total } = await shop.getShops(req)
+
+            if (shops.length === 0) {                
+                return {
+                    response: {
+                        code: "success",
+                        message: "data not found",
+                        success: true
+                    },
+                    shops: [],
+                    pagination: getPagination(pagination ?? {}, total)
+                };
+            }
             return {
                 response: {
                     code: "success",
                     message: "data found",
                     success: true
                 },
-                shops: shops.map(shop => ({ ...shop }))
+                shops: shops.map(shop => ({ ...shop })),
+                pagination: getPagination(pagination ?? {}, total)
             };
         } catch (err) {
             const apiError = err as APIError
