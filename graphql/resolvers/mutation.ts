@@ -45,7 +45,7 @@ const mutations: MutationResolvers = {
     // --end auth
 
     // shop
-    save_shop: async(_, {shop} : any, context: Context): Promise<ShopsResponse> => {
+    saveShop: async(_, {shop} : any, context: Context): Promise<ShopsResponse> => {
         try {
             const userClaims = await verifyToken(context)
 

@@ -121,6 +121,7 @@ type Shop {
 
 # action
 type Query {
+    version: String!
     profile: ProfileResponse
     shops(pagination: PaginationRequest, q: String): ShopsResponse
 }
@@ -132,5 +133,5 @@ type Mutation {
     logout(token: String!): ResponseStatus
 
     # shop
-    save_shop(shop: SaveShopRequest): ShopsResponse
+    saveShop(shop: SaveShopRequest): ShopsResponse
 }

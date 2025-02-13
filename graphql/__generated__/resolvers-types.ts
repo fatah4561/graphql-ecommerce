@@ -37,7 +37,7 @@ export type Mutation = {
   login?: Maybe<LoginResponse>;
   logout?: Maybe<ResponseStatus>;
   register?: Maybe<UserRegisterResponse>;
-  save_shop?: Maybe<ShopsResponse>;
+  saveShop?: Maybe<ShopsResponse>;
 };
 
 
@@ -57,7 +57,7 @@ export type MutationRegisterArgs = {
 };
 
 
-export type MutationSave_ShopArgs = {
+export type MutationSaveShopArgs = {
   shop?: InputMaybe<SaveShopRequest>;
 };
 
@@ -91,6 +91,7 @@ export type Query = {
   __typename?: 'Query';
   profile?: Maybe<ProfileResponse>;
   shops?: Maybe<ShopsResponse>;
+  version: Scalars['String'];
 };
 
 
@@ -324,7 +325,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   login?: Resolver<Maybe<ResolversTypes['LoginResponse']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'password' | 'username'>>;
   logout?: Resolver<Maybe<ResolversTypes['ResponseStatus']>, ParentType, ContextType, RequireFields<MutationLogoutArgs, 'token'>>;
   register?: Resolver<Maybe<ResolversTypes['UserRegisterResponse']>, ParentType, ContextType, Partial<MutationRegisterArgs>>;
-  save_shop?: Resolver<Maybe<ResolversTypes['ShopsResponse']>, ParentType, ContextType, Partial<MutationSave_ShopArgs>>;
+  saveShop?: Resolver<Maybe<ResolversTypes['ShopsResponse']>, ParentType, ContextType, Partial<MutationSaveShopArgs>>;
 }>;
 
 export type PaginationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['PaginationResponse'] = ResolversParentTypes['PaginationResponse']> = ResolversObject<{
@@ -351,6 +352,7 @@ export type ProvinceResolvers<ContextType = any, ParentType extends ResolversPar
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   profile?: Resolver<Maybe<ResolversTypes['ProfileResponse']>, ParentType, ContextType>;
   shops?: Resolver<Maybe<ResolversTypes['ShopsResponse']>, ParentType, ContextType, Partial<QueryShopsArgs>>;
+  version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type ResponseStatusResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResponseStatus'] = ResolversParentTypes['ResponseStatus']> = ResolversObject<{

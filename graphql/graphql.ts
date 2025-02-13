@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { json } from "node:stream/consumers";
 import resolvers from "./resolvers";
 import packageJson from "../package.json";
-import { CommonResponse } from "./__generated__/resolvers-types";
+import { ResponseStatus } from "./__generated__/resolvers-types";
 
 const typeDefs = readFileSync("./schema.graphql", { encoding: "utf-8"});
 const version = packageJson.version
@@ -35,7 +35,7 @@ export const graphqlAPI = api.raw(
         if (req.method === "GET") { // requesting base endpoint
             res.setHeader("Content-Type", "application/json");
 
-            const body: CommonResponse = {
+            const body: ResponseStatus = {
                 code: "success",
                 message: "graphql e-commerce by fatah4561 v" + version,
                 success: true

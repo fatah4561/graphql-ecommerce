@@ -6,8 +6,12 @@ import { verifyToken } from "../middleware";
 import { GetShopParams } from "../../services/shop/shop";
 import { getPagination } from "../../helpers/pagination";
 import { getFields } from "../../helpers/graphql";
+import packageJson from "../../package.json";
 
 const queries: QueryResolvers<Context> = {
+    version: async(): Promise<string> => {
+        return  packageJson.version
+    },
     profile: async (_, __, context: Context, info): Promise<ProfileResponse> => {
         try {
             const userClaims = await verifyToken(context)
