@@ -1,5 +1,5 @@
 import { authentication, shop as shopClient } from "~encore/clients";
-import { GetShopsResponse, LoginResponse, MutationResolvers, SaveShopRequest, Shop, UserRegisterRequest, UserRegisterResponse } from "../__generated__/resolvers-types";
+import { ShopsResponse, LoginResponse, MutationResolvers, SaveShopRequest, Shop, UserRegisterRequest, UserRegisterResponse } from "../__generated__/resolvers-types";
 import { APIError } from "encore.dev/api";
 import { Context } from "../graphql";
 import { verifyToken } from "../middleware";
@@ -45,7 +45,7 @@ const mutations: MutationResolvers = {
     // --end auth
 
     // shop
-    save_shop: async(_, {shop} : any, context: Context): Promise<GetShopsResponse> => {
+    save_shop: async(_, {shop} : any, context: Context): Promise<ShopsResponse> => {
         try {
             const userClaims = await verifyToken(context)
 

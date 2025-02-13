@@ -26,7 +26,7 @@ export const getShops = api(
 
         // keyset pagination
         const paginationQuery = query.clone().orderBy("id", "asc")
-            .where("id", ">=", params.start_key ?? 0)
+            .where("id", ">=", params.cursor ?? 0)
             .limit(params.limit ?? 1)
 
         if (params.fields) {

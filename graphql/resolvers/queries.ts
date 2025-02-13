@@ -1,6 +1,6 @@
 import { Context } from "../graphql";
 import { APIError } from "encore.dev/api";
-import { GetProfileResponse, GetShopsResponse, QueryResolvers, QueryShopsArgs } from "../__generated__/resolvers-types";
+import { ProfileResponse, ShopsResponse, QueryResolvers, QueryShopsArgs } from "../__generated__/resolvers-types";
 import { shop, user } from "~encore/clients";
 import { verifyToken } from "../middleware";
 import { GetShopParams } from "../../services/shop/shop";
@@ -8,7 +8,7 @@ import { getPagination } from "../../helpers/pagination";
 import { getFields } from "../../helpers/graphql";
 
 const queries: QueryResolvers<Context> = {
-    profile: async (_, __, context: Context, info): Promise<GetProfileResponse> => {
+    profile: async (_, __, context: Context, info): Promise<ProfileResponse> => {
         try {
             const userClaims = await verifyToken(context)
 
@@ -39,11 +39,11 @@ const queries: QueryResolvers<Context> = {
         }
 
     },
-    shops: async (_, { pagination, q }: Partial<QueryShopsArgs>, ___, info): Promise<GetShopsResponse> => {
+    shops: async (_, { pagination, q }: Partial<QueryShopsArgs>, ___, info): Promise<ShopsResponse> => {
         try {
             const req: GetShopParams = {
                 limit: pagination?.limit ?? 1,
-                start_key: pagination?.start_key ?? 0,
+                cursor: pagination?.cursor ?? 0,
                 q: q ?? "",
             }
 
@@ -59,7 +59,7 @@ const queries: QueryResolvers<Context> = {
                         success: true
                     },
                     shops: [],
-                    pagination: getPagination(pagination ?? {}, total)
+                    pagination: getPagination(pagination ?? {cursor: 1}, total)
                 };
             }
             return {
@@ -69,7 +69,7 @@ const queries: QueryResolvers<Context> = {
                     success: true
                 },
                 shops: shops.map(shop => ({ ...shop })),
-                pagination: getPagination(pagination ?? {}, total)
+                pagination: getPagination(pagination ?? {cursor: 1}, total)
             };
         } catch (err) {
             const apiError = err as APIError

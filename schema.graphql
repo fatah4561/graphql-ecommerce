@@ -1,5 +1,5 @@
 # response & request
-type CommonResponse {
+type ResponseStatus {
     code: String!
     success: Boolean!
     message: String!
@@ -7,13 +7,13 @@ type CommonResponse {
 
 input PaginationRequest {
     limit: Int
-    start_key: Int
+    cursor: Int!
 }
 
 type PaginationResponse {
     limit: Int
-    previous_key: Int
-    next_key: Int
+    previous_cursor: Int
+    next_cursor: Int
     total_data: Int
 }
 
@@ -29,12 +29,12 @@ input UserRegisterRequest {
 }
 
 type UserRegisterResponse {
-    response: CommonResponse
+    response: ResponseStatus
     token: String!
 }
 
 type LoginResponse {
-    response: CommonResponse
+    response: ResponseStatus
     token: String!
 }
 
@@ -52,16 +52,16 @@ input SaveShopRequest {
     closed_at: String
 }
 
-type GetShopsResponse {
+type ShopsResponse {
     shops: [Shop]
     pagination: PaginationResponse
-    response: CommonResponse
+    response: ResponseStatus
 }
 
-type GetProfileResponse {
+type ProfileResponse {
     user: User
     details: UserDetail
-    response: CommonResponse
+    response: ResponseStatus
 }
 
 # models
@@ -121,16 +121,16 @@ type Shop {
 
 # action
 type Query {
-    profile: GetProfileResponse
-    shops(pagination: PaginationRequest, q: String): GetShopsResponse
+    profile: ProfileResponse
+    shops(pagination: PaginationRequest, q: String): ShopsResponse
 }
 
 type Mutation {
     # auth
     register(user: UserRegisterRequest): UserRegisterResponse
     login(username: String!, password: String!): LoginResponse
-    logout(token: String!): CommonResponse
+    logout(token: String!): ResponseStatus
 
     # shop
-    save_shop(shop: SaveShopRequest): GetShopsResponse
+    save_shop(shop: SaveShopRequest): ShopsResponse
 }
