@@ -2,13 +2,13 @@ import { api, APIError, ErrCode } from "encore.dev/api"
 import { UserEntity, Users } from "./db"
 
 export const getSingleUser = api(
-    { method: "POST", path: "/user:username" }, // TODO refactor change to get so it is REST API compliant
-    async ({ username, fields }: { username: string, fields?: Array<string> }): Promise<{ user: UserEntity }> => {
+    { method: "GET", path: "/user:username" },
+    async ({ username, fields }: { username: string, fields?: string }): Promise<{ user: UserEntity }> => {
         const query = Users().
             where("username", username)
 
         if (fields) {
-            query.column(fields)
+            query.column(fields.split(","))
         }
 
         const user = await query.

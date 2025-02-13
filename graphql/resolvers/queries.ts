@@ -18,7 +18,7 @@ const queries: QueryResolvers<Context> = {
                 selects = (Object.keys(parsedResolveInfo.fieldsByTypeName.User)).filter((field) => field !== 'response' && field != "details");
             }
 
-            const profile = await user.getSingleUser({ username: userClaims.user_name, fields: selects })
+            const profile = await user.getSingleUser({ username: userClaims.user_name, fields: selects?.join(",") })
 
             return {
                 response: {
