@@ -1,7 +1,12 @@
 # response & request
-type ResponseStatus {
+type BaseResponse {
     code: String!
+    message: String!
     success: Boolean!
+}
+
+type ErrorResponse {
+    code: String!
     message: String!
 }
 
@@ -28,15 +33,7 @@ input UserRegisterRequest {
     district_id: Int
 }
 
-type UserRegisterResponse {
-    response: ResponseStatus
-    token: String!
-}
-
-type LoginResponse {
-    response: ResponseStatus
-    token: String!
-}
+union AuthResponse = Token | ErrorResponse
 
 input SaveShopRequest {
     name: String!
@@ -52,19 +49,25 @@ input SaveShopRequest {
     closed_at: String
 }
 
-type ShopsResponse {
+union ShopsResponse = ShopList | ErrorResponse
+
+type ShopList {
     shops: [Shop]
     pagination: PaginationResponse
-    response: ResponseStatus
 }
 
-type ProfileResponse {
+union ProfileResponse = UserSingleResult | ErrorResponse
+
+type UserSingleResult {
     user: User
     details: UserDetail
-    response: ResponseStatus
 }
 
 # models
+type Token {
+    jwt: String!
+}
+
 type User {
     id: Int
     username: String
@@ -122,15 +125,15 @@ type Shop {
 # action
 type Query {
     version: String!
-    profile: ProfileResponse
+    me: ProfileResponse
     shops(pagination: PaginationRequest, q: String): ShopsResponse
 }
 
 type Mutation {
     # auth
-    register(user: UserRegisterRequest): UserRegisterResponse
-    login(username: String!, password: String!): LoginResponse
-    logout(token: String!): ResponseStatus
+    register(user: UserRegisterRequest): AuthResponse
+    login(username: String!, password: String!): AuthResponse
+    logout(token: String!): ErrorResponse
 
     # shop
     saveShop(shop: SaveShopRequest): ShopsResponse

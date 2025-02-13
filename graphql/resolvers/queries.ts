@@ -1,18 +1,17 @@
-import { Context } from "../graphql";
-import { APIError } from "encore.dev/api";
+import { Context, version } from "../graphql";
+import { APIError, ErrCode } from "encore.dev/api";
 import { ProfileResponse, ShopsResponse, QueryResolvers, QueryShopsArgs } from "../__generated__/resolvers-types";
 import { shop, user } from "~encore/clients";
 import { verifyToken } from "../middleware";
 import { GetShopParams } from "../../services/shop/shop";
 import { getPagination } from "../../helpers/pagination";
 import { getFields } from "../../helpers/graphql";
-import packageJson from "../../package.json";
 
 const queries: QueryResolvers<Context> = {
-    version: async(): Promise<string> => {
-        return  packageJson.version
+    version: async (): Promise<string> => {
+        return version
     },
-    profile: async (_, __, context: Context, info): Promise<ProfileResponse> => {
+    me: async (_, __, context: Context, info): Promise<ProfileResponse> => {
         try {
             const userClaims = await verifyToken(context)
 
@@ -23,22 +22,14 @@ const queries: QueryResolvers<Context> = {
             const profile = await user.getSingleUser({ username: userClaims.user_name, fields: selects })
 
             return {
-                response: {
-                    code: "success",
-                    message: "data found",
-                    success: true
-                },
-                user: {...profile.user}
+                user: { ...profile.user }
             }
         } catch (err) {
             const apiError = err as APIError
             console.log(err)
             return {
-                response: {
-                    code: apiError.code ?? "UNKNOWN_ERROR", // Default to a non-null value
-                    message: apiError.message ?? "An unknown error occurred",
-                    success: false
-                }
+                code: apiError.code ?? "UNKNOWN_ERROR", // Default to a non-null value
+                message: apiError.message ?? "An unknown error occurred",
             }
         }
 
@@ -55,35 +46,19 @@ const queries: QueryResolvers<Context> = {
 
             const { shops, total } = await shop.getShops(req)
 
-            if (shops.length === 0) {                
-                return {
-                    response: {
-                        code: "success",
-                        message: "data not found",
-                        success: true
-                    },
-                    shops: [],
-                    pagination: getPagination(pagination ?? {cursor: 1}, total)
-                };
+            if (shops.length === 0) {
+                throw new APIError(ErrCode.NotFound, "data not found")
             }
+
             return {
-                response: {
-                    code: "success",
-                    message: "data found",
-                    success: true
-                },
                 shops: shops.map(shop => ({ ...shop })),
-                pagination: getPagination(pagination ?? {cursor: 1}, total)
+                pagination: getPagination(pagination ?? { cursor: 1 }, total)
             };
         } catch (err) {
             const apiError = err as APIError
-            console.log(err)
             return {
-                response: {
-                    code: apiError.code,
-                    message: apiError.message,
-                    success: false
-                }
+                code: apiError.code,
+                message: apiError.message,
             }
         }
     }
