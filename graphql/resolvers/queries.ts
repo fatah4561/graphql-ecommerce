@@ -1,25 +1,22 @@
 import { Context } from "../graphql";
 import { APIError } from "encore.dev/api";
-import { GetShopsResponse, QueryResolvers, QueryShopsArgs, User } from "../__generated__/resolvers-types";
+import { GetProfileResponse, GetShopsResponse, QueryResolvers, QueryShopsArgs } from "../__generated__/resolvers-types";
 import { shop, user } from "~encore/clients";
-import { parseResolveInfo, ResolveTree } from "graphql-parse-resolve-info";
 import { verifyToken } from "../middleware";
 import { GetShopParams } from "../../services/shop/shop";
 import { getPagination } from "../../helpers/pagination";
+import { getFields } from "../../helpers/graphql";
 
 const queries: QueryResolvers<Context> = {
-    profile: async (_, __, context: Context, info): Promise<User> => {
+    profile: async (_, __, context: Context, info): Promise<GetProfileResponse> => {
         try {
             const userClaims = await verifyToken(context)
 
-            let selects: string[] | undefined = undefined
-            const parsedResolveInfo = parseResolveInfo(info)
-            if (parsedResolveInfo) {
-                // TODO: get detail if needed
-                selects = (Object.keys(parsedResolveInfo.fieldsByTypeName.User)).filter((field) => field !== 'response' && field != "details");
-            }
+            // TODO: get detail if needed
+            const fields = getFields(info)
+            const selects = fields["user"].join(",")
 
-            const profile = await user.getSingleUser({ username: userClaims.user_name, fields: selects?.join(",") })
+            const profile = await user.getSingleUser({ username: userClaims.user_name, fields: selects })
 
             return {
                 response: {
@@ -27,14 +24,15 @@ const queries: QueryResolvers<Context> = {
                     message: "data found",
                     success: true
                 },
-                ...profile.user
+                user: {...profile.user}
             }
         } catch (err) {
             const apiError = err as APIError
+            console.log(err)
             return {
                 response: {
-                    code: apiError.code,
-                    message: apiError.message,
+                    code: apiError.code ?? "UNKNOWN_ERROR", // Default to a non-null value
+                    message: apiError.message ?? "An unknown error occurred",
                     success: false
                 }
             }
@@ -49,14 +47,7 @@ const queries: QueryResolvers<Context> = {
                 q: q ?? "",
             }
 
-            const parsedResolveInfo = parseResolveInfo(info)
-            if (parsedResolveInfo) {
-                const getShopsResponse = parsedResolveInfo.fieldsByTypeName.GetShopsResponse as Record<string, ResolveTree>;
-
-                if ("shops" in getShopsResponse) {
-                    req.fields = (Object.keys(getShopsResponse.shops.fieldsByTypeName.Shop)).join(",");
-                }
-            }
+            req.fields = (getFields(info))["shops"]?.join(",")
 
             const { shops, total } = await shop.getShops(req)
 

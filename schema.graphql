@@ -58,6 +58,12 @@ type GetShopsResponse {
     response: CommonResponse
 }
 
+type GetProfileResponse {
+    user: User
+    details: UserDetail
+    response: CommonResponse
+}
+
 # models
 type User {
     id: Int
@@ -65,9 +71,6 @@ type User {
     email: String
     created_at: String
     updated_at: String
-
-    details: UserDetail
-    response: CommonResponse
 }
 
 type UserDetail {
@@ -118,7 +121,7 @@ type Shop {
 
 # action
 type Query {
-    profile: User
+    profile: GetProfileResponse
     shops(pagination: PaginationRequest, q: String): GetShopsResponse
 }
 
