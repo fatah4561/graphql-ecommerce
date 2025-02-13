@@ -1,12 +1,17 @@
 import { api } from "encore.dev/api";
 import { ApolloServer, HeaderMap } from "@apollo/server";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { json } from "node:stream/consumers";
 import resolvers from "./resolvers";
 import packageJson from "../package.json";
 import { BaseResponse } from "./__generated__/resolvers-types";
+import { join } from "node:path";
 
-const typeDefs = readFileSync("./schema.graphql", { encoding: "utf-8"});
+// const typeDefs = readFileSync("./schema.graphql", { encoding: "utf-8"});
+const typeDefs = readdirSync("./schema")
+  .filter(file => file.endsWith(".graphql")) // Get only .graphql files
+  .map(file => readFileSync(join("./schema", file), { encoding: "utf-8" })); // Read them
+
 export const version = packageJson.version
 
 export interface Context {

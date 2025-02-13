@@ -1,0 +1,57 @@
+# response & request
+input UserRegisterRequest {
+    username: String!
+    email: String!
+    password: String!
+    fullname: String!
+    address: String
+    province_id: Int
+    city_id: Int
+    district_id: Int
+}
+
+union AuthResponse = Token | ErrorResponse
+
+union ProfileResponse = UserSingleResult | ErrorResponse
+
+type UserSingleResult {
+    user: User
+    details: UserDetail
+}
+
+# models
+type Token {
+    jwt: String!
+}
+
+type User {
+    id: Int
+    username: String
+    email: String
+    created_at: String
+    updated_at: String
+}
+
+type UserDetail {
+    id: Int
+    user_id: Int
+    fullname: String
+    address: String
+    postal_code: String
+    province: Province
+    district: District
+    city: City
+    created_at: String
+    updated_at: String
+}
+
+# action
+extend type Query {
+    me: ProfileResponse
+}
+
+extend type Mutation {
+    register(user: UserRegisterRequest): AuthResponse
+    login(username: String!, password: String!): AuthResponse
+    logout(token: String!): ErrorResponse
+}

@@ -1,0 +1,6 @@
+# action
+type Query {
+    version: String!
+}
+
+type Mutation

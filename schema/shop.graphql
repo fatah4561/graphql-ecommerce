@@ -1,0 +1,49 @@
+# request & response
+input SaveShopRequest {
+    name: String!
+    description: String
+    address: String
+    province_id: Int!
+    district_id: Int!
+    city_id: Int!
+    postal_code: Int!
+    coordinate: String!
+    icon: String
+    opened_at: String
+    closed_at: String
+}
+
+union ShopsResponse = ShopList | ErrorResponse
+
+type ShopList {
+    shops: [Shop]
+    pagination: PaginationResponse
+}
+
+# model
+type Shop {
+    id: Int
+    user_id: Int!
+    name: String!
+    description: String
+    address: String
+    province_id: Int!
+    district_id: Int!
+    city_id: Int!
+    postal_code: Int!
+    coordinate: String!
+    icon: String
+    opened_at: String
+    closed_at: String
+    created_at: String
+    updated_at: String
+}
+
+# action
+extend type Query {
+    shops(pagination: PaginationRequest, q: String): ShopsResponse
+}
+
+extend type Mutation {
+    saveShop(shop: SaveShopRequest): ShopsResponse
+}
