@@ -1,5 +1,5 @@
 # request & response
-type BaseResponse {
+type BaseResponse { # for health check on GET /graphql
     code: String!
     message: String!
     success: Boolean!

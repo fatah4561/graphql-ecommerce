@@ -1,0 +1,37 @@
+# request & response
+input SaveProductRequest {
+    name: String!
+    description: String!
+    price: Float!
+    stock_quantity: Int!
+}
+
+union SaveProductResponse = Product | ErrorResponse
+
+union ProductsResponse = ProductList | ErrorResponse
+
+type ProductList {
+    products: [Product]
+    pagination: PaginationResponse
+}
+
+# model
+type Product {
+    id: Int
+    shop_id: Int!
+    name: String!
+    description: String
+    price: Float
+    stock_quantity: Int
+    created_at: String
+    updated_at: String
+}
+
+# action
+extend type Query {
+    products(pagination: PaginationRequest, q: String): ProductsResponse
+}
+
+extend type Mutation {
+    saveProduct(product: SaveProductRequest): SaveProductResponse
+}

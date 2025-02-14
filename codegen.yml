@@ -1,4 +1,4 @@
-schema: './schema.graphql'
+schema: './schema/**/*.graphql'
 generates:
   ./graphql/__generated__/resolvers-types.ts:
     plugins:
