@@ -116,7 +116,7 @@ async function generateToken(user: UserEntity): Promise<string> {
             'user_name': user.username,
         }).
         setProtectedHeader({
-            alg: "RS256"
+            alg: "PS256"
         }).
         setIssuedAt().
         setIssuer(packageJson.name).
