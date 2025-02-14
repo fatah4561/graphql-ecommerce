@@ -8,6 +8,8 @@ import packageJson from "../../package.json"
 export interface GetShopParams extends PaginationRequest {
     q: string
     fields?: string
+    shopId?: number
+    userId?: number
 }
 
 export const getShops = api(
@@ -17,8 +19,17 @@ export const getShops = api(
 
         if (params.q) {
             query.andWhere(function () {
-                this.whereILike("name", params.q ?? "").orWhereILike("description", params.q ?? "")
+                const q = "%" + params.q + "%"
+                this.whereILike("name", q).orWhereILike("description", q)
             })
+        }
+
+        if (params.shopId) {
+            query.andWhere("id", "=", params.shopId)
+        }
+
+        if (params.userId) {
+            query.andWhere("user_id", "=", params.userId)
         }
 
         // count total

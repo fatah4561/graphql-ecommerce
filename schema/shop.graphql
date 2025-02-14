@@ -41,7 +41,7 @@ type Shop {
 
 # action
 extend type Query {
-    shops(pagination: PaginationRequest, q: String): ShopsResponse
+    shops(pagination: PaginationRequest, q: String, shopId: Int, userId: Int): ShopsResponse
 }
 
 extend type Mutation {

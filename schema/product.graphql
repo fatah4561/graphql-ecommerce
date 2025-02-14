@@ -1,5 +1,6 @@
 # request & response
 input SaveProductRequest {
+    id: Int
     name: String!
     description: String!
     price: Float!
@@ -19,19 +20,23 @@ type ProductList {
 type Product {
     id: Int
     shop_id: Int!
+    user_id: Int!
     name: String!
     description: String
     price: Float
     stock_quantity: Int
     created_at: String
     updated_at: String
+    deleted_at: String
 }
 
 # action
 extend type Query {
-    products(pagination: PaginationRequest, q: String): ProductsResponse
+    products(pagination: PaginationRequest, q: String, shopId: Int, productId: Int): ProductsResponse
 }
 
 extend type Mutation {
     saveProduct(product: SaveProductRequest): SaveProductResponse
+    deleteProduct(id: Int): ErrorResponse
+    # TODO? restore action?
 }

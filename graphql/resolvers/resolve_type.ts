@@ -29,3 +29,21 @@ export const profileResponseResolver: Resolvers["ProfileResponse"] = {
         return "UserSingleResult";
     },
 }
+
+export const productsResponseResolver: Resolvers["ProductsResponse"] = {
+    __resolveType(obj) {
+        if ("message" in obj && "code" in obj) {
+            return "ErrorResponse";
+        }
+        return "ProductList";
+    },
+}
+
+export const saveProductResolver: Resolvers["SaveProductResponse"] = {
+    __resolveType(obj) {
+        if ("message" in obj && "code" in obj) {
+            return "ErrorResponse";
+        }
+        return "Product";
+    },
+}

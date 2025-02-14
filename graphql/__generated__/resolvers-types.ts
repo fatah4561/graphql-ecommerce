@@ -43,11 +43,17 @@ export type ErrorResponse = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  deleteProduct?: Maybe<ErrorResponse>;
   login?: Maybe<AuthResponse>;
   logout?: Maybe<ErrorResponse>;
   register?: Maybe<AuthResponse>;
   saveProduct?: Maybe<SaveProductResponse>;
   saveShop?: Maybe<ShopsResponse>;
+};
+
+
+export type MutationDeleteProductArgs = {
+  id?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -92,6 +98,7 @@ export type PaginationResponse = {
 export type Product = {
   __typename?: 'Product';
   created_at?: Maybe<Scalars['String']>;
+  deleted_at?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['Int']>;
   name: Scalars['String'];
@@ -99,6 +106,7 @@ export type Product = {
   shop_id: Scalars['Int'];
   stock_quantity?: Maybe<Scalars['Int']>;
   updated_at?: Maybe<Scalars['String']>;
+  user_id: Scalars['Int'];
 };
 
 export type ProductList = {
@@ -128,17 +136,22 @@ export type Query = {
 
 export type QueryProductsArgs = {
   pagination?: InputMaybe<PaginationRequest>;
+  productId?: InputMaybe<Scalars['Int']>;
   q?: InputMaybe<Scalars['String']>;
+  shopId?: InputMaybe<Scalars['Int']>;
 };
 
 
 export type QueryShopsArgs = {
   pagination?: InputMaybe<PaginationRequest>;
   q?: InputMaybe<Scalars['String']>;
+  shopId?: InputMaybe<Scalars['Int']>;
+  userId?: InputMaybe<Scalars['Int']>;
 };
 
 export type SaveProductRequest = {
   description: Scalars['String'];
+  id?: InputMaybe<Scalars['Int']>;
   name: Scalars['String'];
   price: Scalars['Float'];
   stock_quantity: Scalars['Int'];
@@ -396,6 +409,7 @@ export type ErrorResponseResolvers<ContextType = any, ParentType extends Resolve
 }>;
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  deleteProduct?: Resolver<Maybe<ResolversTypes['ErrorResponse']>, ParentType, ContextType, Partial<MutationDeleteProductArgs>>;
   login?: Resolver<Maybe<ResolversTypes['AuthResponse']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'password' | 'username'>>;
   logout?: Resolver<Maybe<ResolversTypes['ErrorResponse']>, ParentType, ContextType, RequireFields<MutationLogoutArgs, 'token'>>;
   register?: Resolver<Maybe<ResolversTypes['AuthResponse']>, ParentType, ContextType, Partial<MutationRegisterArgs>>;
@@ -413,6 +427,7 @@ export type PaginationResponseResolvers<ContextType = any, ParentType extends Re
 
 export type ProductResolvers<ContextType = any, ParentType extends ResolversParentTypes['Product'] = ResolversParentTypes['Product']> = ResolversObject<{
   created_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  deleted_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -420,6 +435,7 @@ export type ProductResolvers<ContextType = any, ParentType extends ResolversPare
   shop_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   stock_quantity?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  user_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

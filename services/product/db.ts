@@ -12,4 +12,4 @@ const orm = knex({
 })
 
 export type ProductEntity = Omit<Product, "__typename">
-export const Shops = () => orm<ProductEntity>("products")
+export const Products = () => orm<ProductEntity>("products")
