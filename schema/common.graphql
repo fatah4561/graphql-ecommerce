@@ -1,0 +1,39 @@
+# request & response
+type BaseResponse { # for health check on GET /graphql
+    code: String!
+    message: String!
+    success: Boolean!
+}
+
+type ErrorResponse {
+    code: String!
+    message: String!
+}
+
+input PaginationRequest {
+    limit: Int
+    cursor: Int!
+}
+
+type PaginationResponse {
+    limit: Int
+    previous_cursor: Int
+    next_cursor: Int
+    total_data: Int
+}
+
+# model
+type Province {
+    id: Int!
+    name: String!
+}
+
+type District {
+    id: Int!
+    name: String!
+}
+
+type City {
+    id: Int!
+    name: String!
+}

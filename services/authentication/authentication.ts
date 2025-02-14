@@ -13,16 +13,16 @@ const jwkPrivateKey = secret("JWK_PRIVATE_KEY")
 
 const salt = await genSalt(10);
 
-const {publicKey, privateKey} = await getKey()
+const { publicKey, privateKey } = await getKey()
 
 export interface Claims {
-    user_id: string,
+    user_id: number,
     user_name: string,
 }
 
 export const register = api(
-    { method: "POST", path: "/register"},
-    async({request}: {request: UserRegisterRequest}): Promise<{token: string}> => {
+    { method: "POST", path: "/register" },
+    async ({ request }: { request: UserRegisterRequest }): Promise<{ token: string }> => {
         const hashPass = await hash(request.password, salt)
         const newUser: UserEntity = {
             username: request.username,
@@ -49,23 +49,23 @@ export const register = api(
         await UserDetails().insert(newUserDetail)
 
         const token = await generateToken(user)
-        return {token}
+        return { token }
     }
 )
 
 export const login = api(
-    { method: "POST", path: "/login"},
-    async ({username, password}: {username: string, password: string}): Promise<{ token: string }> => {
+    { method: "POST", path: "/login" },
+    async ({ username, password }: { username: string, password: string }): Promise<{ token: string }> => {
         const user = await Users().
-        where("username", username).
-        select("id", "username", "password_hash").
-        first()
+            where("username", username).
+            select("id", "username", "password_hash").
+            first()
 
         if (!user) {
             throw new APIError(ErrCode.InvalidArgument, "username " + username + " not found")
         }
 
-        if (! await compare(password, user.password_hash??"")) {
+        if (! await compare(password, user.password_hash ?? "")) {
             throw new APIError(ErrCode.InvalidArgument, "username or password is invalid")
         }
 
@@ -76,28 +76,28 @@ export const login = api(
 
 export const verify = api(
     { method: "POST", path: "/verify" },
-    async ({token}: {token: string}): Promise<{claims: Claims}> => {
+    async ({ token }: { token: string }): Promise<{ claims: Claims }> => {
         const { payload } = await jwtVerify(token, publicKey, {
             issuer: packageJson.name,
             audience: packageJson.name,
         })
-        const claims: Claims = { 
-            user_id: payload.user_id as string,
+        const claims: Claims = {
+            user_id: payload.user_id as number,
             user_name: payload.user_name as string,
         }
 
-        return {claims}
+        return { claims }
     }
 )
 
-async function getKey(): Promise<{publicKey: KeyLike, privateKey: KeyLike}> {
+async function getKey(): Promise<{ publicKey: KeyLike, privateKey: KeyLike }> {
     if (jwkPublicKey() && jwkPrivateKey()) {
         const ecPublicKey = await importSPKI(jwkPublicKey(), 'PS256')
         const ecPrivateKey = await importPKCS8(jwkPrivateKey(), 'PS256')
 
-        return {publicKey: ecPublicKey, privateKey: ecPrivateKey}
+        return { publicKey: ecPublicKey, privateKey: ecPrivateKey }
     }
-    
+
     const { publicKey, privateKey } = await generateKeyPair('PS256')
     console.warn("WARNING!! using newly generated key, encore secret is not set")
 
@@ -111,10 +111,10 @@ async function getKey(): Promise<{publicKey: KeyLike, privateKey: KeyLike}> {
 }
 
 async function generateToken(user: UserEntity): Promise<string> {
-    return await new SignJWT({ 
-            'user_id': user.id,
-            'user_name': user.username,
-        }).
+    return await new SignJWT({
+        'user_id': Number(user.id ?? 0),
+        'user_name': user.username,
+    }).
         setProtectedHeader({
             alg: "PS256"
         }).

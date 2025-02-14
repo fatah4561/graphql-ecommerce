@@ -11,8 +11,8 @@ const orm = knex({
     connection: UserDB.connectionString
 })
 
-export type UserEntity = Omit<User & { 
-    password_hash?: string 
+export type UserEntity = Omit<User & {
+    password_hash?: string
 }, "__typename" | "response">
 export const Users = () => orm<UserEntity>("users")
 
