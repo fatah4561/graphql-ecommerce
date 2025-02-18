@@ -4,6 +4,7 @@ import { PaginationRequest, SaveShopRequest } from "../../graphql/__generated__/
 import { UserEntity } from "../user/db"
 import { isValidTimeFormat } from "../../helpers/time"
 import packageJson from "../../package.json"
+import { getAuthData } from "~encore/auth"
 
 export interface GetShopParams extends PaginationRequest {
     q: string
@@ -62,6 +63,47 @@ export const getShops = api(
             })),
             total: Number(totalResult[0].count)
         };
+
+    }
+)
+
+export const getShopDetail = api(
+    { method: "GET", path: "/shops:id"  },
+    async ( {id}: {id: number} ): Promise<({ shop: ShopEntity })> => {
+        // TODO? make it to be able to select fields
+        const shop = await Shops().where("id", "=", id).
+        select<ShopEntity>().
+        first()
+
+        if (!shop) {
+            throw new APIError(ErrCode.NotFound, "Shop not found")
+        }
+        shop.id = Number(shop.id)
+
+        return {shop};
+
+    }
+)
+
+export const getUserShop = api(
+    { method: "GET", path: "/shops/me", auth: true  },
+    async (): Promise<({ shop: ShopEntity })> => {
+        // TODO? make it to be able to select fields
+        const authData = getAuthData()
+        if (!authData) {
+            throw new APIError(ErrCode.Unauthenticated, "unauthenticated")
+        }
+
+        const shop = await Shops().where("user_id", "=", authData.userID).
+        select<ShopEntity>().
+        first()
+
+        if (!shop) {
+            throw new APIError(ErrCode.NotFound, "Shop not found")
+        }
+        shop.id = Number(shop.id)
+
+        return {shop};
 
     }
 )

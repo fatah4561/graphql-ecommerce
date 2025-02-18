@@ -77,22 +77,10 @@ const queries: QueryResolvers<Context> = {
                 isOwner: false
             }
 
-            // check if owner of shop
-            if (shopId) { // TODO? make it simpler by using single data service
-                try { // ignore fail auth
-                    const userClaims = await verifyToken(context);
-                    const userId = userClaims?.user_id;
-                
-                    if (userId) {
-                        const userShop = await shop.getShops({ q: "", cursor: 1, userId, fields: "id" });
-                
-                        if (userShop?.shops?.length === 1 && userShop.shops[0].id === shopId) {
-                            req.isOwner = true;
-                        }
-                    }
-                } catch (_) {
-                    req.isOwner = false
-                }
+            // check if owner of shop (auto auth dang encore.ts GG)
+            const userShop = await shop.getUserShop().catch(error => console.log(error))
+            if (userShop) {
+                if(userShop.shop.user_id == shopId) {req.isOwner = true}
             }
 
             req.fields = (getFields(info))["products"]?.join(",")

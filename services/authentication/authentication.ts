@@ -77,16 +77,20 @@ export const login = api(
 export const verify = api(
     { method: "POST", path: "/verify" },
     async ({ token }: { token: string }): Promise<{ claims: Claims }> => {
-        const { payload } = await jwtVerify(token, publicKey, {
-            issuer: packageJson.name,
-            audience: packageJson.name,
-        })
-        const claims: Claims = {
-            user_id: payload.user_id as number,
-            user_name: payload.user_name as string,
+        try {            
+            const { payload } = await jwtVerify(token, publicKey, {
+                issuer: packageJson.name,
+                audience: packageJson.name,
+            })
+            const claims: Claims = {
+                user_id: payload.user_id as number,
+                user_name: payload.user_name as string,
+            }
+    
+            return { claims }
+        } catch (err) {
+            throw new APIError(ErrCode.Unauthenticated, String(err))
         }
-
-        return { claims }
     }
 )
 
