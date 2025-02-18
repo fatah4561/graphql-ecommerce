@@ -2,7 +2,6 @@ import { Context, version } from "../graphql";
 import { APIError, ErrCode } from "encore.dev/api";
 import { ProfileResponse, ShopsResponse, QueryResolvers, QueryShopsArgs, QueryProductsArgs, ProductsResponse } from "../__generated__/resolvers-types";
 import { product, shop, user } from "~encore/clients";
-import { verifyToken } from "../middleware";
 import { GetShopParams } from "../../services/shop/shop";
 import { getPagination } from "../../helpers/pagination";
 import { getFields } from "../../helpers/graphql";
@@ -12,15 +11,13 @@ const queries: QueryResolvers<Context> = {
     version: async (): Promise<string> => {
         return version
     },
-    me: async (_, __, context: Context, info): Promise<ProfileResponse> => {
+    me: async (_, __, ___, info): Promise<ProfileResponse> => {
         try {
-            const userClaims = await verifyToken(context)
-
             // TODO: get detail if needed
             const fields = getFields(info)
             const selects = fields["user"].join(",")
 
-            const profile = await user.getSingleUser({ username: userClaims.user_name, fields: selects })
+            const profile = await user.getSingleUser({fields: selects })
 
             return {
                 user: { ...profile.user }
@@ -66,7 +63,7 @@ const queries: QueryResolvers<Context> = {
         }
     },
     // products
-    products: async (_, { pagination, q, shopId, productId }: Partial<QueryProductsArgs>, context, info): Promise<ProductsResponse> => {
+    products: async (_, { pagination, q, shopId, productId }: Partial<QueryProductsArgs>, ___, info): Promise<ProductsResponse> => {
         try {
             const req: GetProductParams = {
                 limit: pagination?.limit ?? 1,

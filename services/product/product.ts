@@ -1,6 +1,7 @@
 import { api, APIError, ErrCode } from "encore.dev/api";
 import { PaginationRequest, SaveProductRequest } from "../../graphql/__generated__/resolvers-types";
 import { Products, ProductEntity } from "./db";
+import { getAuthData } from "~encore/auth";
 
 export interface GetProductParams extends PaginationRequest {
     q: string
@@ -63,23 +64,24 @@ export const getProducts = api(
 )
 
 export const saveProduct = api(
-    { method: "POST", path: "/product" },
-    async ({ product, shopId, userId }: { product: SaveProductRequest, shopId: number, userId: number }): Promise<{ savedProduct: ProductEntity }> => {
+    { method: "POST", path: "/product", auth: true },
+    async ({ product, shopId }: { product: SaveProductRequest, shopId: number }): Promise<{ savedProduct: ProductEntity }> => {
         // TODO file save for product icon (later in product detail future issue)
         // validation
         if (!shopId) {
             throw new APIError(ErrCode.PermissionDenied, "No shop")
         }
 
-        if (!userId) {
-            throw new APIError(ErrCode.PermissionDenied, "No shop")
+        const authData = getAuthData()
+        if (!authData) {
+            throw new APIError(ErrCode.Unauthenticated, "Unauthenticated")
         }
 
         // --end validation
 
         const productRequest: ProductEntity = {
             shop_id: shopId,
-            user_id: userId,
+            user_id: Number(authData.userID),
 
             created_at: (new Date()).toISOString(),
             updated_at: (new Date()).toISOString(),
@@ -100,15 +102,20 @@ export const saveProduct = api(
  * next delete will be totally removed
  */
 export const deleteProduct = api(
-    { method: "DELETE", path: "/product:id" },
-    async ({ id, userId }: { id?: number, userId?: number }): Promise<{ deletedId: number }> => {
-        if (!id || !userId) {
-            throw new APIError(ErrCode.InvalidArgument, "Request invalid")
+    { method: "DELETE", path: "/product:id", auth: true },
+    async ({ id }: { id?: number }): Promise<{ deletedId: number }> => {
+        const authData = getAuthData()
+        if (!authData) {
+            throw new APIError(ErrCode.Unauthenticated, "Unauthenticated")
+        }
+
+        if (!id) {
+            throw new APIError(ErrCode.InvalidArgument, "InvalidArgument")
         }
 
         const product = await Products()
             .where("id", "=", id)
-            .andWhere("user_id", "=", userId)
+            .andWhere("user_id", "=", authData.userID)
             .select("id", "deleted_at")
             .first()
 
@@ -118,7 +125,7 @@ export const deleteProduct = api(
 
         const deleteQuery = Products()
             .where("id", "=", id)
-            .andWhere("user_id", "=", userId)
+            .andWhere("user_id", "=", authData.userID)
             .returning("id")
 
         if (product.deleted_at) { // permanent deletion

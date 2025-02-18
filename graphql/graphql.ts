@@ -13,8 +13,7 @@ const typeDefs = readdirSync("./schema")
 
 export const version = packageJson.version
 
-export interface Context {
-    token?: string;
+export interface Context { // TODO?: maybe just remove it
 }
 
 const server = new ApolloServer<Context>({
@@ -56,7 +55,7 @@ export const graphqlAPI = api.raw(
                 search: new URLSearchParams(req.url ?? "").toString(),
             },
             context: async () => {
-                return {req, res, token: req.headers.authorization};
+                return {req, res};
             }
         })
 

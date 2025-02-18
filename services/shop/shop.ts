@@ -1,7 +1,6 @@
 import { api, APIError, ErrCode } from "encore.dev/api"
 import { ShopEntity, Shops } from "./db"
 import { PaginationRequest, SaveShopRequest } from "../../graphql/__generated__/resolvers-types"
-import { UserEntity } from "../user/db"
 import { isValidTimeFormat } from "../../helpers/time"
 import packageJson from "../../package.json"
 import { getAuthData } from "~encore/auth"
@@ -109,12 +108,13 @@ export const getUserShop = api(
 )
 
 export const saveShop = api(
-    { method: "POST", path: "/shop" },
-    async ({ shop, user }: { shop: SaveShopRequest, user: UserEntity }): Promise<{ savedShop: ShopEntity }> => {
+    { method: "POST", path: "/shop", auth: true },
+    async ({ shop }: { shop: SaveShopRequest }): Promise<{ savedShop: ShopEntity }> => {
         // TODO file save for shop icon
         // validation
-        if (!user.id) {
-            throw new APIError(ErrCode.PermissionDenied, "User is empty")
+        const authData = getAuthData()
+        if (!authData) {
+            throw new APIError(ErrCode.Unauthenticated, "Unauthenticated")
         }
 
         if (shop.opened_at && !isValidTimeFormat(shop.opened_at)) {
@@ -129,7 +129,7 @@ export const saveShop = api(
         // --end validation
 
         const shopRequest: ShopEntity = {
-            user_id: user.id ?? 0,
+            user_id: Number(authData.userID),
 
             created_at: (new Date()).toISOString(),
             updated_at: (new Date()).toISOString(),
