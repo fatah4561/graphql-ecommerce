@@ -1,11 +1,22 @@
 import { api, APIError, ErrCode } from "encore.dev/api"
 import { UserEntity, Users } from "./db"
+import { getAuthData } from "~encore/auth"
 
 export const getSingleUser = api(
     { method: "GET", path: "/user:username" },
-    async ({ username, fields }: { username: string, fields?: string }): Promise<{ user: UserEntity }> => {
-        const query = Users().
-            where("username", username)
+    async ({ username, fields }: { username?: string, fields?: string }): Promise<{ user: UserEntity }> => {
+        const authData = getAuthData()
+        if (!username && !authData) {
+            throw new APIError(ErrCode.InvalidArgument, "argument not specified")
+        }
+
+        const query = Users()
+        
+        if (username) {
+            query.where("username", username)
+        } else if (authData) {
+            query.where("id", authData.userID)
+        }
 
         if (fields) {
             query.column(fields.split(","))

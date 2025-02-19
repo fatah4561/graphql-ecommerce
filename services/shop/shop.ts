@@ -1,9 +1,9 @@
 import { api, APIError, ErrCode } from "encore.dev/api"
 import { ShopEntity, Shops } from "./db"
 import { PaginationRequest, SaveShopRequest } from "../../graphql/__generated__/resolvers-types"
-import { UserEntity } from "../user/db"
 import { isValidTimeFormat } from "../../helpers/time"
 import packageJson from "../../package.json"
+import { getAuthData } from "~encore/auth"
 
 export interface GetShopParams extends PaginationRequest {
     q: string
@@ -66,13 +66,55 @@ export const getShops = api(
     }
 )
 
+export const getShopDetail = api(
+    { method: "GET", path: "/shops:id"  },
+    async ( {id}: {id: number} ): Promise<({ shop: ShopEntity })> => {
+        // TODO? make it to be able to select fields
+        const shop = await Shops().where("id", "=", id).
+        select<ShopEntity>().
+        first()
+
+        if (!shop) {
+            throw new APIError(ErrCode.NotFound, "Shop not found")
+        }
+        shop.id = Number(shop.id)
+
+        return {shop};
+
+    }
+)
+
+export const getUserShop = api(
+    { method: "GET", path: "/shops/me", auth: true  },
+    async (): Promise<({ shop: ShopEntity })> => {
+        // TODO? make it to be able to select fields
+        const authData = getAuthData()
+        if (!authData) {
+            throw new APIError(ErrCode.Unauthenticated, "unauthenticated")
+        }
+
+        const shop = await Shops().where("user_id", "=", authData.userID).
+        select<ShopEntity>().
+        first()
+
+        if (!shop) {
+            throw new APIError(ErrCode.NotFound, "Shop not found")
+        }
+        shop.id = Number(shop.id)
+
+        return {shop};
+
+    }
+)
+
 export const saveShop = api(
-    { method: "POST", path: "/shop" },
-    async ({ shop, user }: { shop: SaveShopRequest, user: UserEntity }): Promise<{ savedShop: ShopEntity }> => {
+    { method: "POST", path: "/shop", auth: true },
+    async ({ shop }: { shop: SaveShopRequest }): Promise<{ savedShop: ShopEntity }> => {
         // TODO file save for shop icon
         // validation
-        if (!user.id) {
-            throw new APIError(ErrCode.PermissionDenied, "User is empty")
+        const authData = getAuthData()
+        if (!authData) {
+            throw new APIError(ErrCode.Unauthenticated, "Unauthenticated")
         }
 
         if (shop.opened_at && !isValidTimeFormat(shop.opened_at)) {
@@ -87,7 +129,7 @@ export const saveShop = api(
         // --end validation
 
         const shopRequest: ShopEntity = {
-            user_id: user.id ?? 0,
+            user_id: Number(authData.userID),
 
             created_at: (new Date()).toISOString(),
             updated_at: (new Date()).toISOString(),
