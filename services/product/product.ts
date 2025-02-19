@@ -69,12 +69,12 @@ export const saveProduct = api(
         // TODO file save for product icon (later in product detail future issue)
         // validation
         if (!shopId) {
-            throw new APIError(ErrCode.PermissionDenied, "No shop")
+            throw APIError.permissionDenied("No shop")
         }
 
         const authData = getAuthData()
         if (!authData) {
-            throw new APIError(ErrCode.Unauthenticated, "Unauthenticated")
+            throw APIError.unauthenticated("Unauthenticated")
         }
 
         // --end validation
@@ -106,11 +106,11 @@ export const deleteProduct = api(
     async ({ id }: { id?: number }): Promise<{ deletedId: number }> => {
         const authData = getAuthData()
         if (!authData) {
-            throw new APIError(ErrCode.Unauthenticated, "Unauthenticated")
+            throw APIError.unauthenticated("Unauthenticated")
         }
 
         if (!id) {
-            throw new APIError(ErrCode.InvalidArgument, "InvalidArgument")
+            throw APIError.invalidArgument("InvalidArgument")
         }
 
         const product = await Products()
@@ -120,7 +120,7 @@ export const deleteProduct = api(
             .first()
 
         if (!product) {
-            throw new APIError(ErrCode.NotFound, "Product not found")
+            throw APIError.notFound("Product not found")
         }
 
         const deleteQuery = Products()

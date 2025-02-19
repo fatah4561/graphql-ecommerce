@@ -75,7 +75,7 @@ export const getShopDetail = api(
         first()
 
         if (!shop) {
-            throw new APIError(ErrCode.NotFound, "Shop not found")
+            throw APIError.notFound("Shop not found")
         }
         shop.id = Number(shop.id)
 
@@ -90,7 +90,7 @@ export const getUserShop = api(
         // TODO? make it to be able to select fields
         const authData = getAuthData()
         if (!authData) {
-            throw new APIError(ErrCode.Unauthenticated, "unauthenticated")
+            throw APIError.unauthenticated("unauthenticated")
         }
 
         const shop = await Shops().where("user_id", "=", authData.userID).
@@ -98,7 +98,7 @@ export const getUserShop = api(
         first()
 
         if (!shop) {
-            throw new APIError(ErrCode.NotFound, "Shop not found")
+            throw APIError.notFound("Shop not found")
         }
         shop.id = Number(shop.id)
 
@@ -114,16 +114,16 @@ export const saveShop = api(
         // validation
         const authData = getAuthData()
         if (!authData) {
-            throw new APIError(ErrCode.Unauthenticated, "Unauthenticated")
+            throw APIError.unauthenticated("Unauthenticated")
         }
 
         if (shop.opened_at && !isValidTimeFormat(shop.opened_at)) {
-            throw new APIError(ErrCode.InvalidArgument, "Invalid time format for opened_at")
+            throw APIError.invalidArgument("Invalid time format for opened_at")
         }
         shop.opened_at = shop.opened_at ? shop.opened_at + packageJson["app-config"].timezone : "00:00:00+0000"
 
         if (shop.closed_at && !isValidTimeFormat(shop.closed_at)) {
-            throw new APIError(ErrCode.InvalidArgument, "Invalid time format for opened_at")
+            throw APIError.invalidArgument("Invalid time format for opened_at")
         }
         shop.closed_at = shop.closed_at ? shop.closed_at + packageJson["app-config"].timezone : "00:00:00+0000"
         // --end validation
