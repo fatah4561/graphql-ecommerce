@@ -1,7 +1,7 @@
 {
   "name": "graphql-eccommerce",
   "private": true,
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "My implementation of graphql in e-commerce (fatah4561)",
   "license": "MPL-2.0",
   "type": "module",
