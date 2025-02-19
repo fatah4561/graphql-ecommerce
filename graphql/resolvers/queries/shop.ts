@@ -20,7 +20,7 @@ export const shopsQuery: QueryResolvers["shops"] = async (_, { pagination, q, sh
         const { shops, total } = await shop.getShops(req)
 
         if (shops.length === 0) {
-            throw new APIError(ErrCode.NotFound, "data not found")
+            throw APIError.notFound("data not found")
         }
 
         return {

@@ -27,7 +27,7 @@ export const productsQuery: QueryResolvers["products"] = async (_, { pagination,
         const { products, total } = await product.getProducts(req)
 
         if (products.length === 0) {
-            throw new APIError(ErrCode.NotFound, "data not found")
+            throw APIError.notFound("data not found")
         }
 
         return {

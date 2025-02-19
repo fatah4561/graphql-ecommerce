@@ -8,13 +8,13 @@ export const saveProductMutation: MutationResolvers["saveProduct"] = async (_, {
         const userShop = await shopClient.getUserShop().catch(err => {
             const error = err as APIError
             if (error.code == ErrCode.Unauthenticated) {
-                throw new APIError(ErrCode.Unauthenticated, "Please login first")
+                throw  APIError.unauthenticated("Please login first")
             }
             throw error
         });
 
         if (!userShop) {
-            throw new APIError(ErrCode.FailedPrecondition, "Please create a shop first")
+            throw APIError.failedPrecondition("Please create a shop first")
         }
 
         const request = product as SaveProductRequest
@@ -38,16 +38,16 @@ export const deleteProductMutation: MutationResolvers["deleteProduct"] = async(_
         const authData = getAuthData()
 
         if (!authData) {
-            throw new APIError(ErrCode.Unauthenticated, "Please login first")
+            throw APIError.unauthenticated("Please login first")
         }
 
         if (!id) {
-            throw new APIError(ErrCode.InvalidArgument, "Please check the argument")
+            throw APIError.invalidArgument("Please check the argument")
         }
 
         const isProductOwner = await productClient.isProductOwner({id, userId: Number(authData.userID)})
         if (!isProductOwner.isOwner) {
-            throw new APIError(ErrCode.NotFound, "Product not found") // obfuscation -.-
+            throw APIError.notFound("Product not found") // obfuscation -.-
         }
 
         await productClient.deleteProduct({id})

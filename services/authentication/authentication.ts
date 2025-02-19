@@ -62,11 +62,11 @@ export const login = api(
             first()
 
         if (!user) {
-            throw new APIError(ErrCode.InvalidArgument, "username " + username + " not found")
+            throw APIError.invalidArgument("username " + username + " not found")
         }
 
         if (! await compare(password, user.password_hash ?? "")) {
-            throw new APIError(ErrCode.InvalidArgument, "username or password is invalid")
+            throw APIError.invalidArgument("username or password is invalid")
         }
 
         const token = await generateToken(user)
@@ -89,7 +89,7 @@ export const verify = api(
     
             return { claims }
         } catch (err) {
-            throw new APIError(ErrCode.Unauthenticated, String(err))
+            throw APIError.unauthenticated(String(err))
         }
     }
 )

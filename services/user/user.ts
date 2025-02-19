@@ -7,7 +7,7 @@ export const getSingleUser = api(
     async ({ username, fields }: { username?: string, fields?: string }): Promise<{ user: UserEntity }> => {
         const authData = getAuthData()
         if (!username && !authData) {
-            throw new APIError(ErrCode.InvalidArgument, "argument not specified")
+            throw APIError.invalidArgument("argument not specified")
         }
 
         const query = Users()
@@ -30,7 +30,7 @@ export const getSingleUser = api(
         }
 
         if (!user) {
-            throw new APIError(ErrCode.NotFound, "User not found")
+            throw APIError.notFound("User not found")
         } else {
             // potgresql knex return bigint as string so this it to number
             user.id = Number(user.id) 
