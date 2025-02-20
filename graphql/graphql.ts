@@ -6,6 +6,7 @@ import resolvers from "./resolvers";
 import packageJson from "../package.json";
 import { BaseResponse } from "./__generated__/resolvers-types";
 import { join } from "node:path";
+import { getSessionIdFromCookies, setSessionCookie } from "../helpers/cookie";
 
 const typeDefs = readdirSync("./schema")
   .filter(file => file.endsWith(".graphql")) // Get only .graphql files
@@ -13,7 +14,8 @@ const typeDefs = readdirSync("./schema")
 
 export const version = packageJson.version
 
-export interface Context { // TODO?: maybe just remove it
+export interface Context {
+    session_id: string
 }
 
 const server = new ApolloServer<Context>({
@@ -47,6 +49,12 @@ export const graphqlAPI = api.raw(
             return
         }
 
+        // cookie
+        let session_id = getSessionIdFromCookies(req)
+        if (!session_id) {
+            session_id = setSessionCookie(res)
+        }
+
         const httpGraphqlResponse = await server.executeHTTPGraphQLRequest({
             httpGraphQLRequest: {
                 headers,
@@ -55,7 +63,7 @@ export const graphqlAPI = api.raw(
                 search: new URLSearchParams(req.url ?? "").toString(),
             },
             context: async () => {
-                return {req, res};
+                return {req, res, session_id: session_id};
             }
         })
 

@@ -1,4 +1,4 @@
-import { APIError, ErrCode } from "encore.dev/api";
+import { APIError } from "encore.dev/api";
 import { shop, product } from "~encore/clients";
 import { getFields } from "../../../helpers/graphql";
 import { getPagination } from "../../../helpers/pagination";

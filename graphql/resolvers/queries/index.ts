@@ -5,6 +5,7 @@ import { QueryResolvers, ProfileResponse } from "../../__generated__/resolvers-t
 import { productsQuery } from "./product";
 import { shopsQuery } from "./shop";
 import { Context, version } from "../../graphql";
+import { cartQuery } from "./cart";
 
 const queries: QueryResolvers<Context> = {
     version: async (): Promise<string> => {
@@ -32,6 +33,7 @@ const queries: QueryResolvers<Context> = {
     },
     shops: shopsQuery,
     products: productsQuery,
+    cart: cartQuery,
 };
 
 export default queries

@@ -12,7 +12,8 @@ Basic Features
 * [X] View products with keyset pagination
 * [ ] User file management (e.g product image), since grapqhl can't serve file directly a separate file management system is needed with REST API
 * [ ] Payment system (using 3rd party payment gateway)
-* [ ] Cart & ordering system able to order multi products of different shops (split the delivery per shop), also has order histories
+* [ ] Cart system able to add items as guest, but account is required on checkout
+* [ ] Ordering system able to order multi products of different shops (split the delivery per shop), also has order histories
 * [ ] Delivery & tracking system
 * [ ] Reviews system (rating, comment, images)
 * [ ] Wishlist system
@@ -33,15 +34,16 @@ Advance Features
 
 ## Try in sandbox
 
-My preferred ways to try graphql is using apollo sandbox web app ([here](https://studio.apollographql.com/sandbox/explorer "Apollo sandbox")) then put the url:
+My preferred ways to try graphql is using apollo studio explorer web app ([here](https://studio.apollographql.com/sandbox/explorer "Apollo sandbox")) then put the url:
 
 ```
 https://staging-graphql-ecommerce-cpvi.encr.app/graphql
 ```
 
 You can use the sandbox account
-username: techguy@example.com
-password: password
+
+* username: techguy@example.com
+* password: password
 
 Or create a new account
 
@@ -59,6 +61,12 @@ Next make sure to set secret for the JWK_PUBLIC_KEY (SPKI format) and JWK_PRIVAT
 
 ```zsh
 encore set --type dev,local JWK_PRIVATE_KEY
+```
+
+Just in case the generated GraphQL code is not up to date then run
+
+```zsh
+npm run generate
 ```
 
 ## Notes

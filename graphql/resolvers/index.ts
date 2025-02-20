@@ -1,7 +1,7 @@
 import { Resolvers } from "../__generated__/resolvers-types"
 import Query from "./queries/index"
 import Mutation from "./mutations/index"
-import {authResponseResolver, productsResponseResolver, profileResponseResolver, saveProductResolver, shopsResponseResolver} from "./resolve_type";
+import {authResponseResolver, cartsResponseResolver, productsResponseResolver, profileResponseResolver, saveProductResolver, shopsResponseResolver} from "./resolve_type";
 
 const resolvers: Resolvers = {
     // action
@@ -14,6 +14,7 @@ const resolvers: Resolvers = {
     ProfileResponse: profileResponseResolver,
     ProductsResponse: productsResponseResolver,
     SaveProductResponse: saveProductResolver,
+    CartsResponse: cartsResponseResolver,
 };
 
 export default resolvers;

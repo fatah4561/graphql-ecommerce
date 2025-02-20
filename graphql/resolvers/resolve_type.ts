@@ -47,3 +47,12 @@ export const saveProductResolver: Resolvers["SaveProductResponse"] = {
         return "Product";
     },
 }
+
+export const cartsResponseResolver: Resolvers["CartsResponse"] = {
+    __resolveType(obj) {
+        if ("message" in obj && "code" in obj) {
+            return "ErrorResponse";
+        }
+        return "CartList";
+    },
+}

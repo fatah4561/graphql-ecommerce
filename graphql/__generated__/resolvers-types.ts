@@ -14,6 +14,14 @@ export type Scalars = {
   Float: number;
 };
 
+export type AddToCartRequest = {
+  product_id: Scalars['Int'];
+  qty: Scalars['Int'];
+  shop_id: Scalars['Int'];
+};
+
+export type AddToCartResponse = Cart | ErrorResponse;
+
 export type AuthResponse = ErrorResponse | Token;
 
 export type BaseResponse = {
@@ -22,6 +30,24 @@ export type BaseResponse = {
   message: Scalars['String'];
   success: Scalars['Boolean'];
 };
+
+export type Cart = {
+  __typename?: 'Cart';
+  created_at?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['Int']>;
+  is_product_deleted?: Maybe<Scalars['Boolean']>;
+  product_id?: Maybe<Scalars['Int']>;
+  qty?: Maybe<Scalars['Int']>;
+  shop_id?: Maybe<Scalars['Int']>;
+  updated_at?: Maybe<Scalars['String']>;
+};
+
+export type CartList = {
+  __typename?: 'CartList';
+  carts?: Maybe<Array<Maybe<Cart>>>;
+};
+
+export type CartsResponse = CartList | ErrorResponse;
 
 export type City = {
   __typename?: 'City';
@@ -43,12 +69,25 @@ export type ErrorResponse = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addToCart?: Maybe<AddToCartResponse>;
+  deleteFromCart?: Maybe<CartsResponse>;
   deleteProduct?: Maybe<ErrorResponse>;
   login?: Maybe<AuthResponse>;
   logout?: Maybe<ErrorResponse>;
   register?: Maybe<AuthResponse>;
   saveProduct?: Maybe<SaveProductResponse>;
   saveShop?: Maybe<ShopsResponse>;
+  updateCartQty?: Maybe<CartsResponse>;
+};
+
+
+export type MutationAddToCartArgs = {
+  cart?: InputMaybe<AddToCartRequest>;
+};
+
+
+export type MutationDeleteFromCartArgs = {
+  id?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -80,6 +119,12 @@ export type MutationSaveProductArgs = {
 
 export type MutationSaveShopArgs = {
   shop?: InputMaybe<SaveShopRequest>;
+};
+
+
+export type MutationUpdateCartQtyArgs = {
+  id?: InputMaybe<Scalars['Int']>;
+  qty?: InputMaybe<Scalars['Int']>;
 };
 
 export type PaginationRequest = {
@@ -127,6 +172,7 @@ export type Province = {
 
 export type Query = {
   __typename?: 'Query';
+  cart?: Maybe<CartsResponse>;
   me?: Maybe<ProfileResponse>;
   products?: Maybe<ProductsResponse>;
   shops?: Maybe<ShopsResponse>;
@@ -315,9 +361,14 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  AddToCartRequest: AddToCartRequest;
+  AddToCartResponse: ResolversTypes['Cart'] | ResolversTypes['ErrorResponse'];
   AuthResponse: ResolversTypes['ErrorResponse'] | ResolversTypes['Token'];
   BaseResponse: ResolverTypeWrapper<BaseResponse>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  Cart: ResolverTypeWrapper<Cart>;
+  CartList: ResolverTypeWrapper<CartList>;
+  CartsResponse: ResolversTypes['CartList'] | ResolversTypes['ErrorResponse'];
   City: ResolverTypeWrapper<City>;
   District: ResolverTypeWrapper<District>;
   ErrorResponse: ResolverTypeWrapper<ErrorResponse>;
@@ -348,9 +399,14 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
+  AddToCartRequest: AddToCartRequest;
+  AddToCartResponse: ResolversParentTypes['Cart'] | ResolversParentTypes['ErrorResponse'];
   AuthResponse: ResolversParentTypes['ErrorResponse'] | ResolversParentTypes['Token'];
   BaseResponse: BaseResponse;
   Boolean: Scalars['Boolean'];
+  Cart: Cart;
+  CartList: CartList;
+  CartsResponse: ResolversParentTypes['CartList'] | ResolversParentTypes['ErrorResponse'];
   City: City;
   District: District;
   ErrorResponse: ErrorResponse;
@@ -379,6 +435,10 @@ export type ResolversParentTypes = ResolversObject<{
   UserSingleResult: UserSingleResult;
 }>;
 
+export type AddToCartResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['AddToCartResponse'] = ResolversParentTypes['AddToCartResponse']> = ResolversObject<{
+  __resolveType: TypeResolveFn<'Cart' | 'ErrorResponse', ParentType, ContextType>;
+}>;
+
 export type AuthResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['AuthResponse'] = ResolversParentTypes['AuthResponse']> = ResolversObject<{
   __resolveType: TypeResolveFn<'ErrorResponse' | 'Token', ParentType, ContextType>;
 }>;
@@ -388,6 +448,26 @@ export type BaseResponseResolvers<ContextType = any, ParentType extends Resolver
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CartResolvers<ContextType = any, ParentType extends ResolversParentTypes['Cart'] = ResolversParentTypes['Cart']> = ResolversObject<{
+  created_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  is_product_deleted?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  product_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  qty?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  shop_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  updated_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CartListResolvers<ContextType = any, ParentType extends ResolversParentTypes['CartList'] = ResolversParentTypes['CartList']> = ResolversObject<{
+  carts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Cart']>>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CartsResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['CartsResponse'] = ResolversParentTypes['CartsResponse']> = ResolversObject<{
+  __resolveType: TypeResolveFn<'CartList' | 'ErrorResponse', ParentType, ContextType>;
 }>;
 
 export type CityResolvers<ContextType = any, ParentType extends ResolversParentTypes['City'] = ResolversParentTypes['City']> = ResolversObject<{
@@ -409,12 +489,15 @@ export type ErrorResponseResolvers<ContextType = any, ParentType extends Resolve
 }>;
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  addToCart?: Resolver<Maybe<ResolversTypes['AddToCartResponse']>, ParentType, ContextType, Partial<MutationAddToCartArgs>>;
+  deleteFromCart?: Resolver<Maybe<ResolversTypes['CartsResponse']>, ParentType, ContextType, Partial<MutationDeleteFromCartArgs>>;
   deleteProduct?: Resolver<Maybe<ResolversTypes['ErrorResponse']>, ParentType, ContextType, Partial<MutationDeleteProductArgs>>;
   login?: Resolver<Maybe<ResolversTypes['AuthResponse']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'password' | 'username'>>;
   logout?: Resolver<Maybe<ResolversTypes['ErrorResponse']>, ParentType, ContextType, RequireFields<MutationLogoutArgs, 'token'>>;
   register?: Resolver<Maybe<ResolversTypes['AuthResponse']>, ParentType, ContextType, Partial<MutationRegisterArgs>>;
   saveProduct?: Resolver<Maybe<ResolversTypes['SaveProductResponse']>, ParentType, ContextType, Partial<MutationSaveProductArgs>>;
   saveShop?: Resolver<Maybe<ResolversTypes['ShopsResponse']>, ParentType, ContextType, Partial<MutationSaveShopArgs>>;
+  updateCartQty?: Resolver<Maybe<ResolversTypes['CartsResponse']>, ParentType, ContextType, Partial<MutationUpdateCartQtyArgs>>;
 }>;
 
 export type PaginationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['PaginationResponse'] = ResolversParentTypes['PaginationResponse']> = ResolversObject<{
@@ -460,6 +543,7 @@ export type ProvinceResolvers<ContextType = any, ParentType extends ResolversPar
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  cart?: Resolver<Maybe<ResolversTypes['CartsResponse']>, ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['ProfileResponse']>, ParentType, ContextType>;
   products?: Resolver<Maybe<ResolversTypes['ProductsResponse']>, ParentType, ContextType, Partial<QueryProductsArgs>>;
   shops?: Resolver<Maybe<ResolversTypes['ShopsResponse']>, ParentType, ContextType, Partial<QueryShopsArgs>>;
@@ -534,8 +618,12 @@ export type UserSingleResultResolvers<ContextType = any, ParentType extends Reso
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  AddToCartResponse?: AddToCartResponseResolvers<ContextType>;
   AuthResponse?: AuthResponseResolvers<ContextType>;
   BaseResponse?: BaseResponseResolvers<ContextType>;
+  Cart?: CartResolvers<ContextType>;
+  CartList?: CartListResolvers<ContextType>;
+  CartsResponse?: CartsResponseResolvers<ContextType>;
   City?: CityResolvers<ContextType>;
   District?: DistrictResolvers<ContextType>;
   ErrorResponse?: ErrorResponseResolvers<ContextType>;
