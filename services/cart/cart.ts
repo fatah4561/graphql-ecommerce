@@ -26,8 +26,8 @@ export const getCarts = api(
 
         return {
             carts: carts.map(cart => ({
+                ...cart,
                 id: Number(cart.id),
-                ...cart
             }))
         }
     }
@@ -35,7 +35,7 @@ export const getCarts = api(
 
 export const addToCart = api(
     { method: "POST", path: "/carts" },
-    async ({ cart, session_id }: { cart: AddToCartRequest, session_id?: string }): Promise<({ id: number })> => {
+    async ({ fields, cart, session_id }: { fields: string[], cart: AddToCartRequest, session_id?: string }): Promise<({ cart: CartEntity })> => {
         const authData = getAuthData()
 
         let cartRequest: CartEntity = {
@@ -66,16 +66,19 @@ export const addToCart = api(
 
         const productExist = await productExistQuery.first()
         if (productExist?.id) {
-            await Carts().where("id", "=", productExist.id).update({
+            const cart = await Carts().where("id", "=", productExist.id).update({
                 qty: (productExist.qty ?? 0) + (cartRequest.qty ?? 0)
-            })
-            return { id: productExist.id }
+            }, fields)
+
+            let updatedCart = cart[0] as CartEntity
+            updatedCart.id = Number(updatedCart.id)
+            return { cart: updatedCart }
         }
 
-        let newCart = (await Carts().insert(cartRequest, "id"))[0]
+        let newCart = (await Carts().insert(cartRequest, fields))[0]
 
         newCart.id = Number(newCart.id)
-        return { id: newCart.id }
+        return { cart: newCart }
     }
 )
 

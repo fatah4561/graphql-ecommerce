@@ -157,8 +157,8 @@ export const isProductOwner = api(
     }
 )
 
-export const checkProductsDeleted = api(
-    { method: "POST", path: "/product/check-deleted" },
+export const checkProductsExist = api(
+    { method: "POST", path: "/product/check-exist" },
     async ({ productIds }: { productIds: number[] }): Promise<({ products: Record<number, boolean> })> => {
         let products: Record<number, boolean> = {}
 

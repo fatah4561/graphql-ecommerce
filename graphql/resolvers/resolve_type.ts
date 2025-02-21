@@ -56,3 +56,12 @@ export const cartsResponseResolver: Resolvers["CartsResponse"] = {
         return "CartList";
     },
 }
+
+export const addToCartResponseResolver: Resolvers["AddToCartResponse"] = {
+    __resolveType(obj) {
+        if ("message" in obj && "code" in obj) {
+            return "ErrorResponse";
+        }
+        return "Cart";
+    },
+}

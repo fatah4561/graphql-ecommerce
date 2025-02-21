@@ -1,5 +1,6 @@
 import { MutationResolvers } from "../../__generated__/resolvers-types";
 import { registerMutation, loginMutation } from "./auth";
+import { addToCartMutation } from "./cart";
 import { saveProductMutation, deleteProductMutation } from "./product";
 import { saveShopMutation } from "./shop";
 
@@ -10,7 +11,9 @@ const mutations: MutationResolvers = {
     saveShop: saveShopMutation,
 
     saveProduct: saveProductMutation,
-    deleteProduct: deleteProductMutation
+    deleteProduct: deleteProductMutation,
+
+    addToCart: addToCartMutation,
 };
 
 export default mutations;

@@ -1,7 +1,7 @@
 CREATE TABLE carts (
     id BIGSERIAL PRIMARY KEY,
     user_id INT NULL, -- not guest
-    session_id INT NULL, -- if guest
+    session_id VARCHAR(255) NULL, -- if guest
     shop_id INT NOT NULL,
     product_id INT NOT NULL,
     qty INT NOT NULL,

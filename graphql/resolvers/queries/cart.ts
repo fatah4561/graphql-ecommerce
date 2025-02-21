@@ -6,7 +6,9 @@ import { Context } from "../../graphql";
 
 export const cartQuery: QueryResolvers["cart"] = async (_, __, context: Context, info): Promise<CartsResponse> => {
     try {
-        const fields = (getFields(info))["carts"].join(",")
+        // console.log("aw")
+        // console.log(getFields(info))
+        const fields = (getFields(info))["carts"].filter(field => field !== "is_product_deleted").join(",")
 
         const carts = await cartClient.getCarts({ fields, session_id: context.session_id })
 
@@ -19,7 +21,7 @@ export const cartQuery: QueryResolvers["cart"] = async (_, __, context: Context,
             productIds.push(...productIds, Number(product.product_id))
         }
 
-        const productExists = await productClient.checkProductsDeleted({productIds})
+        const productExists = await productClient.checkProductsExist({ productIds })
 
         return {
             carts: carts.carts.map(cart => ({
