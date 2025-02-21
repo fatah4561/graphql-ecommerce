@@ -4,6 +4,7 @@ import { getFields } from "../../../helpers/graphql";
 import { getPagination } from "../../../helpers/pagination";
 import { GetProductParams } from "../../../services/product/product";
 import { ProductsResponse, QueryProductsArgs, QueryResolvers } from "../../__generated__/resolvers-types";
+import { parseError } from "../../../helpers/error";
 
 export const productsQuery: QueryResolvers["products"] = async (_, { pagination, q, shopId, productId }: Partial<QueryProductsArgs>, ___, info): Promise<ProductsResponse> => {
     try {
@@ -37,10 +38,6 @@ export const productsQuery: QueryResolvers["products"] = async (_, { pagination,
             pagination: getPagination(pagination ?? { cursor: 1 }, total)
         };
     } catch (err) {
-        const apiError = err as APIError
-        return {
-            code: apiError.code,
-            message: apiError.message,
-        }
+        return parseError(err)
     }
 }

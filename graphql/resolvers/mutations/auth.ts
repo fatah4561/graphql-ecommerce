@@ -1,6 +1,6 @@
-import { APIError } from "encore.dev/api";
 import { authentication } from "~encore/clients";
 import { AuthResponse, MutationResolvers, UserRegisterRequest } from "../../__generated__/resolvers-types";
+import { parseError } from "../../../helpers/error";
 
 export const registerMutation: MutationResolvers["register"] = async (_, { user }: any): Promise<AuthResponse> => {
     try {
@@ -8,11 +8,7 @@ export const registerMutation: MutationResolvers["register"] = async (_, { user 
         const res = await authentication.register({ request })
         return { jwt: res.token }
     } catch (err) {
-        const apiError = err as APIError
-        return {
-            code: apiError.code,
-            message: apiError.message,
-        };
+        return parseError(err)
     }
 }
 
@@ -21,10 +17,6 @@ export const loginMutation: MutationResolvers["login"] = async (_, { username, p
         const res = await authentication.login({ username, password })
         return { jwt: res.token }
     } catch (err) {
-        const apiError = err as APIError
-        return {
-            code: apiError.code,
-            message: apiError.message,
-        };
+        return parseError(err)
     }
 }

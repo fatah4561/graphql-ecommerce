@@ -3,6 +3,7 @@ import { cart as cartClient, product as productClient } from "~encore/clients";
 import { CartsResponse, QueryResolvers } from "../../__generated__/resolvers-types";
 import { getFields } from "../../../helpers/graphql";
 import { Context } from "../../graphql";
+import { parseError } from "../../../helpers/error";
 
 export const cartQuery: QueryResolvers["cart"] = async (_, __, context: Context, info): Promise<CartsResponse> => {
     try {
@@ -28,10 +29,6 @@ export const cartQuery: QueryResolvers["cart"] = async (_, __, context: Context,
             }))
         }
     } catch (err) {
-        const apiError = err as APIError
-        return {
-            code: apiError.code,
-            message: apiError.message,
-        }
+        return parseError(err)
     }
 }

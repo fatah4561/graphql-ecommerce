@@ -1,9 +1,10 @@
-import { APIError, ErrCode } from "encore.dev/api"
+import { APIError } from "encore.dev/api"
 import { shop } from "~encore/clients"
 import { getFields } from "../../../helpers/graphql"
 import { getPagination } from "../../../helpers/pagination"
 import { GetShopParams } from "../../../services/shop/shop"
 import { QueryResolvers, QueryShopsArgs, ShopsResponse } from "../../__generated__/resolvers-types"
+import { parseError } from "../../../helpers/error"
 
 export const shopsQuery: QueryResolvers["shops"] = async (_, { pagination, q, shopId, userId }: Partial<QueryShopsArgs>, ___, info): Promise<ShopsResponse> => {
     try {
@@ -28,10 +29,6 @@ export const shopsQuery: QueryResolvers["shops"] = async (_, { pagination, q, sh
             pagination: getPagination(pagination ?? { cursor: 1 }, total)
         };
     } catch (err) {
-        const apiError = err as APIError
-        return {
-            code: apiError.code,
-            message: apiError.message,
-        }
+        return parseError(err)
     }
 }

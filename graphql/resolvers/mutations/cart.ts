@@ -1,8 +1,9 @@
-import { APIError, ErrCode } from "encore.dev/api";
+import { APIError } from "encore.dev/api";
 import { cart as cartClient, product as productClient } from "~encore/clients";
 import { AddToCartResponse, CartsResponse, MutationAddToCartArgs, MutationDeleteFromCartArgs, MutationResolvers, MutationUpdateCartQtyArgs } from "../../__generated__/resolvers-types";
 import { Context } from "../../graphql";
 import { getFields } from "../../../helpers/graphql";
+import { parseError } from "../../../helpers/error";
 
 export const addToCartMutation: MutationResolvers["addToCart"] = async (_, { cart }: Partial<MutationAddToCartArgs>, context: Context, info): Promise<AddToCartResponse> => {
     try {
@@ -20,11 +21,7 @@ export const addToCartMutation: MutationResolvers["addToCart"] = async (_, { car
         const carts = await cartClient.addToCart({ fields, cart, session_id: context.session_id })
         return { ...carts.cart }
     } catch (err) {
-        const apiError = err as APIError
-        return {
-            code: apiError.code ?? ErrCode.Internal,
-            message: apiError.message ?? String(err),
-        };
+        return parseError(err)
     }
 }
 
@@ -33,11 +30,7 @@ export const updateCartQtyMutation: MutationResolvers["updateCartQty"] = async (
 
         return {}
     } catch (err) {
-        const apiError = err as APIError
-        return {
-            code: apiError.code ?? ErrCode.Internal,
-            message: apiError.message ?? String(err),
-        };
+        return parseError(err)
     }
 }
 
@@ -46,10 +39,6 @@ export const deleteFromCartMutation: MutationResolvers["deleteFromCart"] = async
 
         return {}
     } catch (err) {
-        const apiError = err as APIError
-        return {
-            code: apiError.code ?? ErrCode.Internal,
-            message: apiError.message ?? String(err),
-        };
+        return parseError(err)
     }
 }
