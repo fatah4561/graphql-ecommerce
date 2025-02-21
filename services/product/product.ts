@@ -1,4 +1,4 @@
-import { api, APIError, ErrCode } from "encore.dev/api";
+import { api, APIError } from "encore.dev/api";
 import { PaginationRequest, SaveProductRequest } from "../../graphql/__generated__/resolvers-types";
 import { Products, ProductEntity } from "./db";
 import { getAuthData } from "~encore/auth";
@@ -129,14 +129,14 @@ export const deleteProduct = api(
             .returning("id")
 
         if (product.deleted_at) { // permanent deletion
-            const deletedId = await deleteQuery.delete() as { id: number}[]
+            const deletedId = await deleteQuery.delete() as { id: number }[]
             return { deletedId: deletedId[0].id }
         } else { // soft delete
             const deletedId = await deleteQuery
                 .update({
                     "deleted_at": (new Date()).toISOString(),
-                }) as { id: number}[]
-            return { deletedId: deletedId[0].id  }
+                }) as { id: number }[]
+            return { deletedId: deletedId[0].id }
         }
     }
 )
@@ -154,5 +154,23 @@ export const isProductOwner = api(
             return { isOwner: true }
         }
         return { isOwner: false }
+    }
+)
+
+export const checkProductsDeleted = api(
+    { method: "POST", path: "/product/check-deleted" },
+    async ({ productIds }: { productIds: number[] }): Promise<({ products: Record<number, boolean> })> => {
+        let products: Record<number, boolean> = {}
+
+        const productResults = await Products().whereIn("id", productIds).
+            column("id").
+            select<ProductEntity[]>()
+
+        for (const product of productResults) {
+            if (product.id) {
+                products[Number(product.id)] = true
+            }
+        }
+        return { products }
     }
 )
