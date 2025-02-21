@@ -6,8 +6,6 @@ import { Context } from "../../graphql";
 
 export const cartQuery: QueryResolvers["cart"] = async (_, __, context: Context, info): Promise<CartsResponse> => {
     try {
-        // console.log("aw")
-        // console.log(getFields(info))
         const fields = (getFields(info))["carts"].filter(field => field !== "is_product_deleted").join(",")
 
         const carts = await cartClient.getCarts({ fields, session_id: context.session_id })
