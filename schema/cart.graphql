@@ -31,6 +31,6 @@ extend type Query {
 
 extend type Mutation {
     addToCart(cart: AddToCartRequest): AddToCartResponse
-    updateCartQty(id: Int, qty: Int): CartsResponse
-    deleteFromCart(id: Int): CartsResponse
+    updateCartQty(id: Int, qty: Int): ErrorResponse
+    deleteFromCart(id: Int): ErrorResponse
 }

@@ -13,6 +13,6 @@ const orm = knex({
 
 export type CartEntity = Omit<Cart & {
     user_id?: number,
-    session_id?: number,
+    session_id?: string,
 }, "__typename" | "is_product_deleted"> // is_product_deleted is only flag for FE
 export const Carts = () => orm<CartEntity>("carts")

@@ -12,7 +12,7 @@ Basic Features
 * [X] View products with keyset pagination
 * [ ] User file management (e.g product image), since grapqhl can't serve file directly a separate file management system is needed with REST API
 * [ ] Payment system (using 3rd party payment gateway)
-* [ ] Cart system able to add items as guest, but account is required on checkout
+* [X] Cart system able to add items as guest, but account is required on checkout
 * [ ] Ordering system able to order multi products of different shops (split the delivery per shop), also has order histories
 * [ ] Delivery & tracking system
 * [ ] Reviews system (rating, comment, images)
@@ -27,6 +27,8 @@ Advance Features
 * [ ] Oauth or social login (Google, Facebook)
 * [ ] Rate limiting (especially on login and register)
 * [ ] Caching for cart system (using redis)
+* [ ] If guest has products in cart on log in merge the cart
+* [ ] Retry capabilities on payment system (on 5 retry considered payment really failed)
 * [ ] Products variant & categories system
 * [ ] Admin dashboard for analytic
 * [ ] Action logs system (turn into EDA in some services)
@@ -42,10 +44,12 @@ https://staging-graphql-ecommerce-cpvi.encr.app/graphql
 
 You can use the sandbox account
 
-* username: techguy@example.com
+* username: techguy
 * password: password
 
 Or create a new account
+
+Note using apollo studio won't automatically set guest session cookies, so you might need to apply it manually (or maybe use postman instead)
 
 ## Running in local
 

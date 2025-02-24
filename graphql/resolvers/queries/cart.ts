@@ -5,6 +5,7 @@ import { getFields } from "../../../helpers/graphql";
 import { Context } from "../../graphql";
 import { parseError } from "../../../helpers/error";
 
+// TODO? maybe change into subscription
 export const cartQuery: QueryResolvers["cart"] = async (_, __, context: Context, info): Promise<CartsResponse> => {
     try {
         const fields = (getFields(info))["carts"].filter(field => field !== "is_product_deleted").join(",")

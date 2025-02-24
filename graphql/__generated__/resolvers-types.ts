@@ -70,14 +70,14 @@ export type ErrorResponse = {
 export type Mutation = {
   __typename?: 'Mutation';
   addToCart?: Maybe<AddToCartResponse>;
-  deleteFromCart?: Maybe<CartsResponse>;
+  deleteFromCart?: Maybe<ErrorResponse>;
   deleteProduct?: Maybe<ErrorResponse>;
   login?: Maybe<AuthResponse>;
   logout?: Maybe<ErrorResponse>;
   register?: Maybe<AuthResponse>;
   saveProduct?: Maybe<SaveProductResponse>;
   saveShop?: Maybe<ShopsResponse>;
-  updateCartQty?: Maybe<CartsResponse>;
+  updateCartQty?: Maybe<ErrorResponse>;
 };
 
 
@@ -490,14 +490,14 @@ export type ErrorResponseResolvers<ContextType = any, ParentType extends Resolve
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   addToCart?: Resolver<Maybe<ResolversTypes['AddToCartResponse']>, ParentType, ContextType, Partial<MutationAddToCartArgs>>;
-  deleteFromCart?: Resolver<Maybe<ResolversTypes['CartsResponse']>, ParentType, ContextType, Partial<MutationDeleteFromCartArgs>>;
+  deleteFromCart?: Resolver<Maybe<ResolversTypes['ErrorResponse']>, ParentType, ContextType, Partial<MutationDeleteFromCartArgs>>;
   deleteProduct?: Resolver<Maybe<ResolversTypes['ErrorResponse']>, ParentType, ContextType, Partial<MutationDeleteProductArgs>>;
   login?: Resolver<Maybe<ResolversTypes['AuthResponse']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'password' | 'username'>>;
   logout?: Resolver<Maybe<ResolversTypes['ErrorResponse']>, ParentType, ContextType, RequireFields<MutationLogoutArgs, 'token'>>;
   register?: Resolver<Maybe<ResolversTypes['AuthResponse']>, ParentType, ContextType, Partial<MutationRegisterArgs>>;
   saveProduct?: Resolver<Maybe<ResolversTypes['SaveProductResponse']>, ParentType, ContextType, Partial<MutationSaveProductArgs>>;
   saveShop?: Resolver<Maybe<ResolversTypes['ShopsResponse']>, ParentType, ContextType, Partial<MutationSaveShopArgs>>;
-  updateCartQty?: Resolver<Maybe<ResolversTypes['CartsResponse']>, ParentType, ContextType, Partial<MutationUpdateCartQtyArgs>>;
+  updateCartQty?: Resolver<Maybe<ResolversTypes['ErrorResponse']>, ParentType, ContextType, Partial<MutationUpdateCartQtyArgs>>;
 }>;
 
 export type PaginationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['PaginationResponse'] = ResolversParentTypes['PaginationResponse']> = ResolversObject<{

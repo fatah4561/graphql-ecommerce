@@ -39,7 +39,7 @@ export const addToCart = api(
         const authData = getAuthData()
 
         let cartRequest: CartEntity = {
-            session_id: 0,
+            session_id: "",
             user_id: 0,
 
             created_at: (new Date()).toISOString(),
@@ -58,7 +58,7 @@ export const addToCart = api(
             cartRequest.user_id = Number(authData.userID)
             productExistQuery.andWhere("user_id", "=", authData.userID)
         } else if (session_id) {
-            cartRequest.session_id = Number(session_id)
+            cartRequest.session_id = String(session_id)
             productExistQuery.andWhere("session_id", "=", session_id)
         } else {
             throw APIError.unauthenticated("Unauthenticated")
