@@ -14,6 +14,7 @@ Basic Features
 * [ ] Payment system (using 3rd party payment gateway)
 * [X] Cart system able to add items as guest, but account is required on checkout
 * [ ] Ordering system able to order multi products of different shops (split the delivery per shop), also has order histories
+* [ ] User can have multiple shipping address (on checkout can choose only 1)
 * [ ] Delivery & tracking system
 * [ ] Reviews system (rating, comment, images)
 * [ ] Wishlist system

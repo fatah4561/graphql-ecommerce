@@ -1,0 +1,42 @@
+# request & response
+input SaveAddressRequest {
+    id: Int
+    is_favorite: Boolean
+    address: String!
+    coordinate_lat: String!
+    coordinate_long: String!
+    postal_code: String!
+    province_id: Int
+    district_id: Int
+    city_id: Int
+}
+
+union ShippingAddressResponse = ShippingAddressList | ErrorResponse
+
+type ShippingAddressList {
+    shippingAddresses: [ShippingAddress]
+}
+
+# model
+type ShippingAddress {
+    id: Int
+    is_favorite: Boolean
+    address: String
+    coordinate_lat: String
+    coordinate_long: String
+    postal_code: String
+    province_id: Int
+    district_id: Int
+    city_id: Int
+    created_at: String
+    updated_at: String
+}
+
+# action
+extend type Query {
+    shippingAddress: ShippingAddressResponse
+}
+
+extend type Mutation {
+    saveShippingAddress(address: SaveAddressRequest): ErrorResponse
+}
