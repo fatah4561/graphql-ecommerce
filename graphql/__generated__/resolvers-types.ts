@@ -76,7 +76,7 @@ export type Mutation = {
   logout?: Maybe<ErrorResponse>;
   register?: Maybe<AuthResponse>;
   saveProduct?: Maybe<SaveProductResponse>;
-  saveShippingAddress?: Maybe<ErrorResponse>;
+  saveShippingAddress?: Maybe<SaveShippingAddressResponse>;
   saveShop?: Maybe<ShopsResponse>;
   updateCartQty?: Maybe<ErrorResponse>;
 };
@@ -119,7 +119,7 @@ export type MutationSaveProductArgs = {
 
 
 export type MutationSaveShippingAddressArgs = {
-  address?: InputMaybe<SaveAddressRequest>;
+  address?: InputMaybe<SaveShippingAddressRequest>;
 };
 
 
@@ -202,18 +202,6 @@ export type QueryShopsArgs = {
   userId?: InputMaybe<Scalars['Int']>;
 };
 
-export type SaveAddressRequest = {
-  address: Scalars['String'];
-  city_id?: InputMaybe<Scalars['Int']>;
-  coordinate_lat: Scalars['String'];
-  coordinate_long: Scalars['String'];
-  district_id?: InputMaybe<Scalars['Int']>;
-  id?: InputMaybe<Scalars['Int']>;
-  is_favorite?: InputMaybe<Scalars['Boolean']>;
-  postal_code: Scalars['String'];
-  province_id?: InputMaybe<Scalars['Int']>;
-};
-
 export type SaveProductRequest = {
   description: Scalars['String'];
   id?: InputMaybe<Scalars['Int']>;
@@ -223,6 +211,20 @@ export type SaveProductRequest = {
 };
 
 export type SaveProductResponse = ErrorResponse | Product;
+
+export type SaveShippingAddressRequest = {
+  address: Scalars['String'];
+  city_id?: InputMaybe<Scalars['Int']>;
+  coordinate_lat: Scalars['Float'];
+  coordinate_long: Scalars['Float'];
+  district_id?: InputMaybe<Scalars['Int']>;
+  id?: InputMaybe<Scalars['Int']>;
+  is_favorite?: InputMaybe<Scalars['Boolean']>;
+  postal_code: Scalars['String'];
+  province_id?: InputMaybe<Scalars['Int']>;
+};
+
+export type SaveShippingAddressResponse = ErrorResponse | ShippingAddress;
 
 export type SaveShopRequest = {
   address?: InputMaybe<Scalars['String']>;
@@ -242,8 +244,8 @@ export type ShippingAddress = {
   __typename?: 'ShippingAddress';
   address?: Maybe<Scalars['String']>;
   city_id?: Maybe<Scalars['Int']>;
-  coordinate_lat?: Maybe<Scalars['String']>;
-  coordinate_long?: Maybe<Scalars['String']>;
+  coordinate_lat?: Maybe<Scalars['Float']>;
+  coordinate_long?: Maybe<Scalars['Float']>;
   created_at?: Maybe<Scalars['String']>;
   district_id?: Maybe<Scalars['Int']>;
   id?: Maybe<Scalars['Int']>;
@@ -424,9 +426,10 @@ export type ResolversTypes = ResolversObject<{
   ProfileResponse: ResolversTypes['ErrorResponse'] | ResolversTypes['UserSingleResult'];
   Province: ResolverTypeWrapper<Province>;
   Query: ResolverTypeWrapper<{}>;
-  SaveAddressRequest: SaveAddressRequest;
   SaveProductRequest: SaveProductRequest;
   SaveProductResponse: ResolversTypes['ErrorResponse'] | ResolversTypes['Product'];
+  SaveShippingAddressRequest: SaveShippingAddressRequest;
+  SaveShippingAddressResponse: ResolversTypes['ErrorResponse'] | ResolversTypes['ShippingAddress'];
   SaveShopRequest: SaveShopRequest;
   ShippingAddress: ResolverTypeWrapper<ShippingAddress>;
   ShippingAddressList: ResolverTypeWrapper<ShippingAddressList>;
@@ -466,9 +469,10 @@ export type ResolversParentTypes = ResolversObject<{
   ProfileResponse: ResolversParentTypes['ErrorResponse'] | ResolversParentTypes['UserSingleResult'];
   Province: Province;
   Query: {};
-  SaveAddressRequest: SaveAddressRequest;
   SaveProductRequest: SaveProductRequest;
   SaveProductResponse: ResolversParentTypes['ErrorResponse'] | ResolversParentTypes['Product'];
+  SaveShippingAddressRequest: SaveShippingAddressRequest;
+  SaveShippingAddressResponse: ResolversParentTypes['ErrorResponse'] | ResolversParentTypes['ShippingAddress'];
   SaveShopRequest: SaveShopRequest;
   ShippingAddress: ShippingAddress;
   ShippingAddressList: ShippingAddressList;
@@ -545,7 +549,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   logout?: Resolver<Maybe<ResolversTypes['ErrorResponse']>, ParentType, ContextType, RequireFields<MutationLogoutArgs, 'token'>>;
   register?: Resolver<Maybe<ResolversTypes['AuthResponse']>, ParentType, ContextType, Partial<MutationRegisterArgs>>;
   saveProduct?: Resolver<Maybe<ResolversTypes['SaveProductResponse']>, ParentType, ContextType, Partial<MutationSaveProductArgs>>;
-  saveShippingAddress?: Resolver<Maybe<ResolversTypes['ErrorResponse']>, ParentType, ContextType, Partial<MutationSaveShippingAddressArgs>>;
+  saveShippingAddress?: Resolver<Maybe<ResolversTypes['SaveShippingAddressResponse']>, ParentType, ContextType, Partial<MutationSaveShippingAddressArgs>>;
   saveShop?: Resolver<Maybe<ResolversTypes['ShopsResponse']>, ParentType, ContextType, Partial<MutationSaveShopArgs>>;
   updateCartQty?: Resolver<Maybe<ResolversTypes['ErrorResponse']>, ParentType, ContextType, Partial<MutationUpdateCartQtyArgs>>;
 }>;
@@ -605,11 +609,15 @@ export type SaveProductResponseResolvers<ContextType = any, ParentType extends R
   __resolveType: TypeResolveFn<'ErrorResponse' | 'Product', ParentType, ContextType>;
 }>;
 
+export type SaveShippingAddressResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['SaveShippingAddressResponse'] = ResolversParentTypes['SaveShippingAddressResponse']> = ResolversObject<{
+  __resolveType: TypeResolveFn<'ErrorResponse' | 'ShippingAddress', ParentType, ContextType>;
+}>;
+
 export type ShippingAddressResolvers<ContextType = any, ParentType extends ResolversParentTypes['ShippingAddress'] = ResolversParentTypes['ShippingAddress']> = ResolversObject<{
   address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   city_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  coordinate_lat?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  coordinate_long?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  coordinate_lat?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  coordinate_long?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   created_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   district_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -711,6 +719,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Province?: ProvinceResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   SaveProductResponse?: SaveProductResponseResolvers<ContextType>;
+  SaveShippingAddressResponse?: SaveShippingAddressResponseResolvers<ContextType>;
   ShippingAddress?: ShippingAddressResolvers<ContextType>;
   ShippingAddressList?: ShippingAddressListResolvers<ContextType>;
   ShippingAddressResponse?: ShippingAddressResponseResolvers<ContextType>;

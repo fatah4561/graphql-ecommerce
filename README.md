@@ -2,7 +2,13 @@
 
 ## About
 
-Building a feature-rich graphql e-commerce using encore.ts with apollo-server. This serves as my journal on learning Typescript, Encore.ts, GraphQL, on back-end side.
+This project is a feature-rich GraphQL e-commerce backend built with **Encore.ts** and **Apollo Server**.
+It serves as my personal learning journal for **TypeScript, GraphQL, and Encore.ts** on the backend.
+
+I designed this project with a strong emphasis on:
+✅ Readability & Maintainability
+✅ Clean Code & Separation of Concerns (SoC)
+✅ Flexibility to Adapt into a REST API (thanks to encore)
 
 Basic Features
 
@@ -16,11 +22,13 @@ Basic Features
 * [ ] Ordering system able to order multi products of different shops (split the delivery per shop), also has order histories
 * [ ] User can have multiple shipping address (on checkout can choose only 1)
 * [ ] Delivery & tracking system
+* [X] User has multiple delivery address
 * [ ] Reviews system (rating, comment, images)
 * [ ] Wishlist system
 * [ ] DIscount system
 * [ ] API docs
 * [ ] Cronjob to reset the app data each day for encore cloud (preventing abuse on my free plan -.-)
+* [ ] Unit Test
 
 Advance Features
 

@@ -65,3 +65,21 @@ export const addToCartResponseResolver: Resolvers["AddToCartResponse"] = {
         return "Cart";
     },
 }
+
+export const saveShippingAddressResponseResolver: Resolvers["SaveShippingAddressResponse"] = {
+    __resolveType(obj) {
+        if ("message" in obj && "code" in obj) {
+            return "ErrorResponse";
+        }
+        return "ShippingAddress";
+    }
+}
+
+export const shippingAddressResponseResolver: Resolvers["ShippingAddressResponse"] = {
+    __resolveType(obj) {
+        if ("message" in obj && "code" in obj) {
+            return "ErrorResponse";
+        }
+        return "ShippingAddressList";
+    }
+}

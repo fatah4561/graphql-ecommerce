@@ -73,11 +73,14 @@ export const saveProduct = api(
         }
 
         const authData = getAuthData()
-        if (!authData) {
+        if (!authData) { // TODO! on auth:true this is not needed
             throw APIError.unauthenticated("Unauthenticated")
         }
-
+        
         // --end validation
+            if (!product.id) {
+                product.id = undefined
+            }
 
         const productRequest: ProductEntity = {
             shop_id: shopId,

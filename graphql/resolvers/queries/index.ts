@@ -6,6 +6,7 @@ import { shopsQuery } from "./shop";
 import { Context, version } from "../../graphql";
 import { cartQuery } from "./cart";
 import { parseError } from "../../../helpers/error";
+import { shippingAddressQuery } from "./shipping_address";
 
 const queries: QueryResolvers<Context> = {
     version: async (): Promise<string> => {
@@ -30,6 +31,7 @@ const queries: QueryResolvers<Context> = {
     shops: shopsQuery,
     products: productsQuery,
     cart: cartQuery,
+    shippingAddress: shippingAddressQuery,
 };
 
 export default queries
