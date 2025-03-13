@@ -95,3 +95,7 @@ cat private.txt | encore secret set --type dev,local JWK_PRIVATE_KEY
 ```bash
 encore test
 ```
+
+## References
+
+* Payment system design [by system design classroom](https://newsletter.systemdesignclassroom.com/p/every-backend-engineer-needs-to-know?ref=dailydev)
