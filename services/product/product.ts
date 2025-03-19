@@ -4,11 +4,12 @@ import { Products, ProductEntity } from "./db";
 import { getAuthData } from "~encore/auth";
 
 export interface GetProductParams extends PaginationRequest {
-    q: string
+    q?: string
     fields?: string
     shopId?: number
     productId?: number
-    isOwner: boolean
+    productIds?: string
+    isOwner: boolean // owner show deleted product
 }
 
 export const getProducts = api(
@@ -24,7 +25,9 @@ export const getProducts = api(
         }
 
         if (params.productId) {
-            query.andWhere("product_id", "=", params.productId)
+            query.andWhere("id", "=", params.productId)
+        } else if (params.productIds) {
+            query.whereIn("id", params.productIds.split(","))
         }
 
         if (params.shopId) {
@@ -55,6 +58,7 @@ export const getProducts = api(
         return {
             products: products.map(product => ({
                 ...product,
+                price: parseFloat(String(product.price)),
                 shop_id: product.shop_id ?? 0,
                 user_id: product.user_id ?? 0,
             })),
@@ -76,11 +80,11 @@ export const saveProduct = api(
         if (!authData) { // TODO! on auth:true this is not needed
             throw APIError.unauthenticated("Unauthenticated")
         }
-        
+
         // --end validation
-            if (!product.id) {
-                product.id = undefined
-            }
+        if (!product.id) {
+            product.id = undefined
+        }
 
         const productRequest: ProductEntity = {
             shop_id: shopId,

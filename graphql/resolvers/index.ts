@@ -23,6 +23,8 @@ const resolvers: Resolvers = {
 
     SaveShippingAddressResponse: resolve_type.saveShippingAddressResponseResolver,
     ShippingAddressResponse: resolve_type.shippingAddressResponseResolver,
+
+    OrdersResponse: resolve_type.ordersResponseResolver,
 };
 
 export default resolvers;

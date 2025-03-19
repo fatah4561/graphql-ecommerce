@@ -1,5 +1,6 @@
 import { APIError, ErrCode } from "encore.dev/api";
 import { ErrorResponse } from "../graphql/__generated__/resolvers-types";
+import log from "encore.dev/log";
 
 /**
  * Parse error object into ErrorResponse object.
@@ -9,8 +10,20 @@ import { ErrorResponse } from "../graphql/__generated__/resolvers-types";
  */
 export const parseError = (err: any): ErrorResponse => {
     const error = err as APIError
+    // log.debug("ouch", error)
     return {
         code: error.code ?? ErrCode.Internal,
         message: error.message ?? String(err)
+    }
+}
+
+/**
+ * Return an ErrorResponse object with empty code and message.
+ * Used for when we want to return a success response but without any data.
+ */
+export const emptyError = (): ErrorResponse => {
+    return {
+        code: "",
+        message: "",
     }
 }

@@ -8,7 +8,8 @@ It serves as my personal learning journal for **TypeScript, GraphQL, and Encore.
 I designed this project with a strong emphasis on:
 ✅ Readability & Maintainability
 ✅ Clean Code & Separation of Concerns (SoC)
-✅ Flexibility to Adapt into a REST API (thanks to encore)
+✅ Flexibility to Adapt into a REST API (thanks to encore, might need some modifications)
+
 
 Basic Features
 
@@ -89,6 +90,12 @@ setting encore secret might get stuck if values is too long, solution is to use 
 ```zsh
 cat private.txt | encore secret set --type dev,local JWK_PRIVATE_KEY
 ```
+
+## Code design notes
+
+* Naming convention:
+  * function parameters and fields use snake_case (session_id)
+  * variable name and function use camelCase (sessionId)
 
 ## Testing
 

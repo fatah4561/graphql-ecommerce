@@ -19,6 +19,7 @@ type Cart {
     shop_id: Int
     product_id: Int
     qty: Int
+    # TODO add price 
     is_product_deleted: Boolean
     created_at: String
     updated_at: String

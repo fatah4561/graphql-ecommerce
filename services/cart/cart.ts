@@ -6,7 +6,7 @@ import { AddToCartRequest } from "../../graphql/__generated__/resolvers-types";
 // TODO?: maybe do something about the auth / session checking so i don't repeat them like this
 export const getCarts = api(
     { method: "GET", path: "/carts" },
-    async ({ fields, session_id }: { fields: string, session_id?: string }): Promise<({ carts: CartEntity[] })> => {
+    async ({ fields, session_id, cart_ids }: { fields: string, session_id?: string, cart_ids?: string }): Promise<({ carts: CartEntity[] })> => {
         const authData = getAuthData()
 
         const query = Carts()
@@ -16,6 +16,10 @@ export const getCarts = api(
             query.where("session_id", "=", session_id)
         } else {
             throw APIError.unauthenticated("Unauthenticated")
+        }
+
+        if (cart_ids) {
+            query.whereIn("id", cart_ids.split(","))
         }
 
         if (fields) {
@@ -113,7 +117,7 @@ export const updateCartQty = api(
 
 export const deleteCart = api(
     { method: "DELETE", path: "/carts:id" },
-    async ({ id, session_id }: { id: number, session_id: string }): Promise<({ id: number })> => {
+    async ({ id, session_id }: { id: number, session_id?: string }): Promise<({ id: number })> => {
         const authData = getAuthData()
         const productExistQuery = Carts().where("id", "=", id)
 
@@ -133,5 +137,32 @@ export const deleteCart = api(
 
         await deleteQuery.del()
         return { id }
+    }
+)
+
+export const deleteMultiCart = api(
+    { method: "DELETE", path: "/carts" },
+    async ({ ids, session_id }: { ids: string, session_id?: string }): Promise<({ ids: string[] })> => {
+        const authData = getAuthData()
+
+        const arrayIds = ids.split(",")
+        const productExistQuery = Carts().whereIn("id", arrayIds)
+
+        if (authData) {
+            productExistQuery.andWhere("user_id", "=", authData.userID)
+        } else if (session_id) {
+            productExistQuery.andWhere("session_id", "=", session_id)
+        } else {
+            throw APIError.unauthenticated("Unauthenticated")
+        }
+        const deleteQuery = productExistQuery.clone()
+
+        const cartProduct = await productExistQuery.clone().first()
+        if (!cartProduct) {
+            throw APIError.notFound("Cart ids: " + ids + " not found")
+        }
+
+        await deleteQuery.del()
+        return { ids: arrayIds }
     }
 )

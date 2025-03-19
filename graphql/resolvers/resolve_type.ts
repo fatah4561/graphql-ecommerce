@@ -83,3 +83,14 @@ export const shippingAddressResponseResolver: Resolvers["ShippingAddressResponse
         return "ShippingAddressList";
     }
 }
+
+export const ordersResponseResolver: Resolvers["OrdersResponse"] = {
+    __resolveType(obj) {
+        if ("message" in obj && "code" in obj) {
+            return "ErrorResponse";
+        } else if (!Array.isArray(obj)) {
+            return "Order"
+        }
+        return "OrderList";
+    }
+}

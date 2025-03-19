@@ -1,0 +1,44 @@
+# request & response
+input MakeOrderRequest {
+    cart_id: [Int!]
+    shipping_address_id: Int # default to favorite on null
+}
+
+union OrdersResponse = OrderList | Order | ErrorResponse # can be singular result for detail
+
+type OrderList {
+    orders: [Order]
+}
+
+# model
+type Order {
+    id: Int
+    shop_id: Int!
+    total_amount: Float!
+    status: Int!
+    created_at: String
+    updated_at: String
+
+    order_items: [OrderItem]
+}
+
+type OrderItem {
+    id: Int
+    order_id: Int!
+    product_id: Int!
+    product_name: String!
+    product_description: String
+    quantity: Int!
+    price: Float!
+    subtotal: Float
+    created_at: String
+}
+
+# action
+extend type Query {
+    order(id: Int): OrdersResponse
+}
+
+extend type Mutation {
+    makeOrder(request: MakeOrderRequest): ErrorResponse
+}
