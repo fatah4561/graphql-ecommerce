@@ -42,6 +42,23 @@ export const getUserFavoriteShippingAddress = api(
     }
 )
 
+export const getUserSingleShippingAddress = api(
+    { method: "GET", path: "/shipping-address/:id", auth: true },
+    async ({ id }: { id: number }): Promise<({ shippingAddress: ShippingAddressEntity })> => {
+        const authData = getAuthData()
+        const shippingAddress = await ShippingAddresses().where("user_id", authData?.userID).
+            andWhere("id", "=", id).
+            select<ShippingAddressEntity>().first()
+
+        if (!shippingAddress) {
+            throw APIError.notFound("No favorite address found")
+        }
+        shippingAddress.id = Number(shippingAddress?.id)
+
+        return { shippingAddress }
+    }
+)
+
 export const saveShippingAddress = api(
     { method: "POST", path: "/shipping-address", auth: true },
     async ({ shippingAddress }: { shippingAddress: SaveShippingAddressRequest }): Promise<({ shippingAddress: ShippingAddressEntity })> => {

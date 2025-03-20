@@ -78,10 +78,10 @@ export const getOrderItems = api( // when user request items detail
         const orderItems = await query.select<OrderItemEntity[]>()
         let recordOrderItems: Record<number, OrderItemEntity[]> = {}
 
-        for (let orderItem of orderItems) {
+        orderItems.forEach(orderItem => {
             orderItem.id = Number(orderItem.id)
             recordOrderItems[orderItem.id].push(orderItem)
-        }
+        })
 
         return { orderItems: recordOrderItems }
     }
@@ -94,53 +94,49 @@ export const createOrder = api(
         if (!authData) {
             throw APIError.unauthenticated("Unauthenticated")
         }
+
         /**
          *  we will merge same shop cart into single order
          */
+        const recordOrders: Record<number, OrderEntity> = {} // shopId, order
+        const recordOrderItems: Record<number, OrderItemEntity[]> = {} // shopId, orderItems
 
-        // shopId, order / order items
-        let recordOrders: Record<number, OrderEntity> = {}
-        let recordOrderItems: Record<number, OrderItemEntity[]> = {}
-        for (const cart of carts) {
-            if (!recordOrders[Number(cart.shop_id)]) {
-                recordOrders[Number(cart.shop_id)] = {
-                    user_id: Number(cart.user_id),
-                    shop_id: Number(cart.shop_id),
-                    total_amount: 0,
-                    status: OrderStatusEnum.PENDING
-                }
-            }
-            recordOrders[Number(cart.shop_id)].total_amount = recordOrders[Number(cart.shop_id)].total_amount + (Number(cart.qty) * Number(products[Number(cart.product_id)].price))
+        carts.forEach(cart => {
+            const shopId = Number(cart.shop_id)
+            const productId = Number(cart.product_id)
+            const product = products[productId]
 
-            if (!recordOrderItems[Number(cart.shop_id)]) {
-                recordOrderItems[Number(cart.shop_id)] = []
-            }
-            recordOrderItems[Number(cart.shop_id)].push({
+            recordOrders[shopId] ||= {
+                user_id: Number(cart.user_id),
+                shop_id: shopId,
+                total_amount: 0,
+                status: OrderStatusEnum.PENDING,
+            };
+            recordOrders[shopId].total_amount += Number(cart.qty) * Number(product.price)
+
+            recordOrderItems[shopId] ||= []
+            recordOrderItems[shopId].push({
                 order_id: 0,
-                product_id: Number(cart.product_id),
-                product_name: String(products[Number(cart.product_id)].name),
-                product_description: String(products[Number(cart.product_id)].description),
-                price: Number(products[Number(cart.product_id)].price),
+                product_id: productId,
+                product_name: product.name,
+                product_description: String(product.description),
+                price: Number(product.price),
                 quantity: Number(cart.qty),
-                // subtotal: Number(products[Number(cart.product_id)].price) * Number(cart.qty),
             })
-        }
+        })
 
-
-        let orderIds: number[] = []
+        const orderIds: number[] = []
         for (const [shopId, order] of Object.entries(recordOrders)) {
             // TODO? maybe use transaction next time
             const result = await Orders().insert(order, ["id"])
-            orderIds.push(Number(result[0].id))
+            const orderId = Number(result[0].id)
+            orderIds.push(orderId)
 
-            for (const orderItem of recordOrderItems[Number(shopId)]) {
-                orderItem.order_id = Number(result[0].id)
-                await OrderItems().insert({
-                    ...orderItem
-                })
-            }
+            recordOrderItems[Number(shopId)].forEach(async orderItem => {
+                orderItem.order_id = orderId
+                await OrderItems().insert(orderItem)
+            })
         }
         return { orderIds }
-
     }
 )

@@ -2,8 +2,9 @@ import { APIError } from "encore.dev/api";
 import { emptyError, parseError } from "../../../helpers/error";
 import { ErrorResponse, MutationMakeOrderArgs, MutationResolvers } from "../../__generated__/resolvers-types";
 import { getAuthData } from "~encore/auth";
-import { cart as cartClient, order as orderClient, product, product as productClient } from "~encore/clients";
+import { cart as cartClient, order as orderClient, product as productClient, shipping as shippingClient } from "~encore/clients";
 import { ProductEntity } from "../../../services/product/db";
+import { NewShippingAddressEntity } from "../../../services/shipping/db";
 
 export const makeOrderMutation: MutationResolvers["makeOrder"] = async (_, { request }: Partial<MutationMakeOrderArgs>): Promise<ErrorResponse> => {
     try {
@@ -16,6 +17,21 @@ export const makeOrderMutation: MutationResolvers["makeOrder"] = async (_, { req
             throw APIError.unauthenticated("Unauthenticated")
         }
 
+        // shipping address
+        let shippingAddress = NewShippingAddressEntity()
+        if (request.shipping_address_id) {
+            const res = await shippingClient.getUserSingleShippingAddress({id: request.shipping_address_id})
+            shippingAddress = res.shippingAddress
+        } else {
+            const res = await shippingClient.getUserFavoriteShippingAddress()
+            shippingAddress = res.shippingAddress
+        }
+
+        if (!shippingAddress || !shippingAddress.id) {
+            throw APIError.failedPrecondition("Please choose correct shipping address or create a new one")
+        }
+        // --end shipping address
+
         const cartIds = request.cart_id.join(",")
         const { carts } = await cartClient.getCarts({ fields: "", cart_ids: cartIds })
 
@@ -23,8 +39,7 @@ export const makeOrderMutation: MutationResolvers["makeOrder"] = async (_, { req
             throw APIError.notFound("Cart id not found")
         }
 
-        // product_id, qty
-        let recordCartProducts: Record<number, number> = {}
+        let recordCartProducts: Record<number, number> = {} // product_id, qty
         let productIds: string[] = []
         for (const cart of carts) {
             recordCartProducts[Number(cart.product_id)] = Number(cart.qty)
@@ -56,9 +71,10 @@ export const makeOrderMutation: MutationResolvers["makeOrder"] = async (_, { req
 
         await cartClient.deleteMultiCart({ ids: cartIds })
 
-        // TODO! order address
+        for (const orderId of orderIds) {
+            await shippingClient.createShippingOrder({ request: shippingAddress, orderId })
+        }
 
-        // get carts
         return emptyError()
     } catch (err) {
         return parseError(err)

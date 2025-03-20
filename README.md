@@ -10,7 +10,6 @@ I designed this project with a strong emphasis on:
 ✅ Clean Code & Separation of Concerns (SoC)
 ✅ Flexibility to Adapt into a REST API (thanks to encore, might need some modifications)
 
-
 Basic Features
 
 * [X] Basic JWT Authentication & Registration (username & password) hashed with bcrypt
@@ -106,3 +105,4 @@ encore test
 ## References
 
 * Payment system design [by system design classroom](https://newsletter.systemdesignclassroom.com/p/every-backend-engineer-needs-to-know?ref=dailydev)
+* Fast typescript analyzer (helps in making code clean) [here](https://ftaproject.dev/playground)
