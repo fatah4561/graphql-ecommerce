@@ -2,6 +2,7 @@ import { api, APIError } from "encore.dev/api";
 import { PaginationRequest, SaveProductRequest } from "../../graphql/__generated__/resolvers-types";
 import { Products, ProductEntity } from "./db";
 import { getAuthData } from "~encore/auth";
+import log from "encore.dev/log";
 
 export interface GetProductParams extends PaginationRequest {
     q?: string
@@ -58,7 +59,7 @@ export const getProducts = api(
         return {
             products: products.map(product => ({
                 ...product,
-                price: parseFloat(String(product.price)),
+                price: parseFloat(String(product.price ?? "0")),
                 shop_id: product.shop_id ?? 0,
                 user_id: product.user_id ?? 0,
             })),
