@@ -19,6 +19,7 @@ const { publicKey, privateKey } = await getKey()
 export interface Claims {
     user_id: number,
     user_name: string,
+    shop_id: number,
 }
 
 export const register = api(
@@ -96,6 +97,7 @@ export const verify = api(
             const claims: Claims = {
                 user_id: payload.user_id as number,
                 user_name: payload.user_name as string,
+                shop_id: payload.shop_id as number,
             }
     
             return { claims }

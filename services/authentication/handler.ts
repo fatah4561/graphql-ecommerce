@@ -13,6 +13,7 @@ interface AuthParams {
 // that the auth handler makes available.
 interface AuthData {
     userID: string;
+    shopID: number;
 }
 
 // The auth handler itself.
@@ -20,7 +21,7 @@ export const auth = authHandler<AuthParams, AuthData>(
     async (params) => {
         try {            
             const userClaims = await authentication.verify({token: params.authorization})
-            return {userID: userClaims.claims.user_id.toString()};
+            return {userID: userClaims.claims.user_id.toString(), shopID: userClaims.claims.shop_id};
         } catch (err) {
             throw err as APIError;
         }
