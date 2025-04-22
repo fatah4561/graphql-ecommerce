@@ -67,43 +67,61 @@ export const getShops = api(
 )
 
 export const getShopDetail = api(
-    { method: "GET", path: "/shops:id"  },
-    async ( {id}: {id: number} ): Promise<({ shop: ShopEntity })> => {
+    { method: "GET", path: "/shops:id" },
+    async ({ id }: { id: number }): Promise<({ shop: ShopEntity })> => {
         // TODO? make it to be able to select fields
         const shop = await Shops().where("id", "=", id).
-        select<ShopEntity>().
-        first()
+            select<ShopEntity>().
+            first()
 
         if (!shop) {
             throw APIError.notFound("Shop not found")
         }
         shop.id = Number(shop.id)
 
-        return {shop};
+        return { shop };
 
     }
 )
 
 export const getUserShop = api(
-    { method: "GET", path: "/shops/me", auth: true  },
-    async (): Promise<({ shop: ShopEntity })> => {
-        // TODO? make it to be able to select fields
+    { method: "GET", path: "/shops/me", auth: true },
+    async ({ fields }: { fields: string }): Promise<({ shop: ShopEntity })> => {
         const authData = getAuthData()
         if (!authData) {
             throw APIError.unauthenticated("unauthenticated")
         }
 
-        const shop = await Shops().where("user_id", "=", authData.userID).
-        select<ShopEntity>().
-        first()
+        const query = Shops().where("user_id", "=", authData.userID)
+        if (fields) {
+            query.column(fields.split(","))
+        }
+
+        const shop = await query.select<ShopEntity>().
+            first()
 
         if (!shop) {
             throw APIError.notFound("Shop not found")
         }
         shop.id = Number(shop.id)
 
-        return {shop};
+        return { shop };
 
+    }
+)
+
+export const getShopByUserId = api(
+    { method: "GET", path: "/shops/user:id" },
+    async ({ id }: { id: number }): Promise<({ shop?: ShopEntity })> => {
+        const shop = await Shops().where("user_id", "=", id)
+            .select<ShopEntity>()
+            .first()
+
+        if (shop) {
+            shop.id = Number(shop.id)
+        }
+
+        return { shop }
     }
 )
 

@@ -232,6 +232,7 @@ export type Query = {
 
 export type QueryOrderArgs = {
   id?: InputMaybe<Scalars['Int']>;
+  is_shop: Scalars['Boolean'];
 };
 
 
@@ -691,7 +692,7 @@ export type ProvinceResolvers<ContextType = any, ParentType extends ResolversPar
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   cart?: Resolver<Maybe<ResolversTypes['CartsResponse']>, ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['ProfileResponse']>, ParentType, ContextType>;
-  order?: Resolver<Maybe<ResolversTypes['OrdersResponse']>, ParentType, ContextType, Partial<QueryOrderArgs>>;
+  order?: Resolver<Maybe<ResolversTypes['OrdersResponse']>, ParentType, ContextType, RequireFields<QueryOrderArgs, 'is_shop'>>;
   products?: Resolver<Maybe<ResolversTypes['ProductsResponse']>, ParentType, ContextType, Partial<QueryProductsArgs>>;
   shippingAddress?: Resolver<Maybe<ResolversTypes['ShippingAddressResponse']>, ParentType, ContextType>;
   shops?: Resolver<Maybe<ResolversTypes['ShopsResponse']>, ParentType, ContextType, Partial<QueryShopsArgs>>;

@@ -6,6 +6,7 @@ import { UserDetailEntity, UserDetails, UserEntity, Users } from "../user/db"
 import { UserRegisterRequest } from "../../graphql/__generated__/resolvers-types"
 import { SignJWT, jwtVerify, generateKeyPair, exportPKCS8, importPKCS8, exportSPKI, importSPKI, KeyLike } from 'jose';
 import { secret } from "encore.dev/config"
+import { ShopEntity } from "../shop/db"
 
 // TODO? maybe use ES256 (ECDSA) or EdDSA for smaller bandwidth with equivalent security of RS256, PS256 but also faster
 const jwkPublicKey = secret("JWK_PUBLIC_KEY")
@@ -23,6 +24,15 @@ export interface Claims {
 export const register = api(
     { method: "POST", path: "/register" },
     async ({ request }: { request: UserRegisterRequest }): Promise<{ token: string }> => {
+        // check email registered
+        const existedUser = await Users().where("email", "=", request.email)
+            .select<UserEntity>("email").
+            first()
+        if (existedUser?.email) {
+            throw APIError.invalidArgument("Email is registered")
+        }
+
+        // insert user
         const hashPass = await hash(request.password, salt)
         const newUser: UserEntity = {
             username: request.username,
@@ -55,7 +65,7 @@ export const register = api(
 
 export const login = api(
     { method: "POST", path: "/login" },
-    async ({ username, password }: { username: string, password: string }): Promise<{ token: string }> => {
+    async ({ username, password }: { username: string, password: string }): Promise<{ user: UserEntity }> => {
         const user = await Users().
             where("username", username).
             select("id", "username", "password_hash").
@@ -68,9 +78,10 @@ export const login = api(
         if (! await compare(password, user.password_hash ?? "")) {
             throw APIError.invalidArgument("username or password is invalid")
         }
+        user.id = Number(user.id)
 
-        const token = await generateToken(user)
-        return { token }
+        // const token = await generateToken(user)
+        return { user }
     }
 )
 
@@ -94,6 +105,7 @@ export const verify = api(
     }
 )
 
+// non API functions
 async function getKey(): Promise<{ publicKey: KeyLike, privateKey: KeyLike }> {
     if (jwkPublicKey() && jwkPrivateKey()) {
         const ecPublicKey = await importSPKI(jwkPublicKey(), 'PS256')
@@ -114,10 +126,15 @@ async function getKey(): Promise<{ publicKey: KeyLike, privateKey: KeyLike }> {
     return { publicKey, privateKey }
 }
 
-async function generateToken(user: UserEntity): Promise<string> {
+export async function generateToken(user: UserEntity, shop?: ShopEntity): Promise<string> {
+    if (!user.id) {
+        throw APIError.unauthenticated("unauthenticated") 
+    }
+
     return await new SignJWT({
-        'user_id': Number(user.id ?? 0),
+        'user_id': Number(user.id),
         'user_name': user.username,
+        'shop_id': shop?.id ?? 0,
     }).
         setProtectedHeader({
             alg: "PS256"
