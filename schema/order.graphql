@@ -36,7 +36,7 @@ type OrderItem {
 
 # action
 extend type Query {
-    order(id: Int): OrdersResponse
+    order(id: Int, as_shop: Boolean!): OrdersResponse
 }
 
 extend type Mutation {

@@ -22,7 +22,7 @@ const orm = knex({
 })
 
 export type OrderEntity = Omit<Order&{
-    user_id: number
+    user_id?: number // TODO? change it to customer_id
 }, "__typename" | "order_items">
 export const Orders = () => orm<OrderEntity>("orders")
 

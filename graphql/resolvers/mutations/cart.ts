@@ -18,6 +18,8 @@ export const addToCartMutation: MutationResolvers["addToCart"] = async (_, { car
             throw APIError.notFound("product not found")
         }
 
+        // TODO! validate if adding self products
+
         const carts = await cartClient.addToCart({ fields, cart, session_id: context.session_id })
         return { ...carts.cart }
     } catch (err) {

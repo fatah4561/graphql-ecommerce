@@ -3,6 +3,7 @@ import { OrderEntity, OrderItemEntity, OrderItems, Orders, OrderStatusEnum, RawO
 import { getAuthData } from "~encore/auth";
 import { CartEntity } from "../cart/db";
 import { ProductEntity } from "../product/db";
+import log from "encore.dev/log";
 
 export const getMyOrders = api(
     { method: "GET", path: "/order", auth: true },
@@ -15,17 +16,20 @@ export const getMyOrders = api(
         const query = Orders().where("user_id", authData.userID)
 
         if (fields) {
-            query.column(fields.split(","))
+            query.column(["id", ...fields.split(",")])
         }
 
         const orders = await query.select<OrderEntity[]>()
+        orders.forEach(order => {
+            order.id = Number(order.id)
+            order.user_id !== null ? Number(order.user_id) : null
+            order.shop_id = Number(order.shop_id)
+            order.total_amount = Number(order.total_amount)
+        });
 
         return {
             orders: orders.map(order => ({
                 ...order,
-                id: Number(order.id),
-                user_id: Number(order.user_id),
-                shop_id: Number(order.shop_id),
             })),
             total: orders.length
         }
@@ -33,30 +37,69 @@ export const getMyOrders = api(
 )
 
 export const getShopOrders = api( // for shop owner
-    { method: "GET", path: "/order/shop:shop_id", auth: true },
-    async ({ shop_id, fields }: { shop_id: number, fields: string }): Promise<({ orders: OrderEntity[], total: number })> => {
+    { method: "GET", path: "/order/shop", auth: true },
+    async ({ fields }: { fields: string }): Promise<({ orders: OrderEntity[], total: number })> => {
         const authData = getAuthData()
         if (!authData) {
             throw APIError.unauthenticated("Unauthenticated")
         }
 
-        const query = Orders().where("shop_id", shop_id)
+        if (!authData.shopID) {
+            throw APIError.failedPrecondition("Doesn't own a shop, please create a new one")
+        }
+
+        const query = Orders().where("shop_id", authData.shopID)
 
         if (fields) {
-            query.column(fields.split(","))
+            query.column(["id", ...fields.split(",")])
         }
 
         const orders = await query.select<OrderEntity[]>()
+        orders.forEach(order => {
+            order.id = Number(order.id)
+            order.user_id !== null ? Number(order.user_id) : null
+            order.shop_id = Number(order.shop_id)
+            order.total_amount = Number(order.total_amount)
+        });
 
         return {
             orders: orders.map(order => ({
                 ...order,
-                id: Number(order.id),
-                user_id: Number(order.user_id),
-                shop_id: Number(order.shop_id),
             })),
             total: orders.length
         }
+    }
+)
+
+export const getSingleOrder = api(
+    { method: "GET", path: "/order/:id", auth: true },
+    async ({ id, fields, as_shop }: { id: number, fields: string, as_shop: boolean }): Promise<({ order: OrderEntity })> => {
+        const authData = getAuthData()
+        if (!authData) {
+            throw APIError.unauthenticated("Unauthenticated")
+        }
+
+        const query = Orders().where("id", id)
+        if (as_shop) {
+            query.andWhere("shop_id", authData.shopID)
+        } else {
+            query.andWhere("user_id", authData.userID)
+        }
+
+        if (fields) {
+            query.column(["user_id", ...fields.split(",")])
+        }
+
+        const order = await query.select<OrderEntity>().first()
+        if (!order) {
+            throw APIError.notFound("Data not found")
+        }
+        order.id = Number(order.id)
+        order.total_amount = Number(order.total_amount)
+
+        log.debug("order", order)
+
+        return { order }
     }
 )
 
@@ -78,9 +121,21 @@ export const getOrderItems = api( // when user request items detail
         const orderItems = await query.select<OrderItemEntity[]>()
         let recordOrderItems: Record<number, OrderItemEntity[]> = {}
 
+        if (orderItems.length == 0) {
+            return { orderItems: [] }
+        }
+
         orderItems.forEach(orderItem => {
             orderItem.id = Number(orderItem.id)
-            recordOrderItems[orderItem.id].push(orderItem)
+            orderItem.order_id = Number(orderItem.order_id)
+            orderItem.price = Number(orderItem.price)
+            orderItem.subtotal = Number(orderItem.subtotal)
+
+            if (!recordOrderItems[orderItem.order_id] || recordOrderItems[orderItem.order_id].length === 0) {
+                recordOrderItems[orderItem.order_id] = [orderItem]
+            } else {
+                recordOrderItems[orderItem.order_id].push(orderItem)
+            }
         })
 
         return { orderItems: recordOrderItems }

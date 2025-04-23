@@ -2,7 +2,6 @@ import { api, APIError } from "encore.dev/api";
 import { PaginationRequest, SaveProductRequest } from "../../graphql/__generated__/resolvers-types";
 import { Products, ProductEntity } from "./db";
 import { getAuthData } from "~encore/auth";
-import log from "encore.dev/log";
 
 export interface GetProductParams extends PaginationRequest {
     q?: string
