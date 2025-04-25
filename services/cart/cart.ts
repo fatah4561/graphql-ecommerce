@@ -83,7 +83,6 @@ export const addToCart = api(
         let newCart = (await Carts().insert(cartRequest, fields))[0]
 
         newCart.id = Number(newCart.id)
-        log.debug("cart", newCart)
         return { carts: newCart }
     }
 )
@@ -170,3 +169,19 @@ export const deleteMultiCart = api(
 )
 
 // TODO edge case if user was a guest then login check if the cart product is your own product then delete from cart
+// this is supposed to be run as background not exposed
+export const deleteYourOwnProductCart = api(
+    { method: "POST", path: "/carts/delete-your-own-product" },
+    async ({ selfProductIds }: {selfProductIds: number[]}): Promise<({ ids: number[] })> => {
+        const authData = getAuthData()
+        if (!authData || !authData.userID) {
+            return { ids: [] }
+        }
+
+        await Carts()
+            .whereIn("product_id", selfProductIds)
+            .del()
+        
+        return { ids: [] }
+    }
+)

@@ -18,7 +18,7 @@ export const productsQuery: QueryResolvers["products"] = async (_, { pagination,
         }
 
         // check if owner of shop (auto auth dang encore.ts GG)
-        const userShop = await shop.getUserShop({fields: "user_id"}).catch(error => console.log(error))
+        const userShop = await shop.getUserShop({fields: "user_id"})
         if (userShop) {
             if(userShop.shop.user_id == shopId) {req.isOwner = true}
         }

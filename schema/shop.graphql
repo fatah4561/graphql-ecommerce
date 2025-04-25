@@ -23,15 +23,15 @@ type ShopList {
 # model
 type Shop {
     id: Int
-    user_id: Int!
-    name: String!
+    user_id: Int
+    name: String
     description: String
     address: String
-    province_id: Int!
-    district_id: Int!
-    city_id: Int!
-    postal_code: Int!
-    coordinate: String!
+    province_id: Int
+    district_id: Int
+    city_id: Int
+    postal_code: Int
+    coordinate: String
     icon: String
     opened_at: String
     closed_at: String

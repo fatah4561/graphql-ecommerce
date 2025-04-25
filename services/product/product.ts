@@ -2,6 +2,7 @@ import { api, APIError } from "encore.dev/api";
 import { PaginationRequest, SaveProductRequest } from "../../graphql/__generated__/resolvers-types";
 import { Products, ProductEntity } from "./db";
 import { getAuthData } from "~encore/auth";
+import log from "encore.dev/log";
 
 export interface GetProductParams extends PaginationRequest {
     q?: string
@@ -204,5 +205,27 @@ export const checkProductsExist = api(
             }
         }
         return { products }
+    }
+)
+
+// helpers
+export const getMyProductIds = api(
+    { method: "GET", path: "/products/mine-as-ids" },
+    async (): Promise<({ productIds: number[] })> => {
+
+        const authData = getAuthData()
+        if (!authData || !authData.userID) {
+            return { productIds: [] }
+        }
+
+        const products = await Products()
+            .where("user_id", "=", authData.userID)
+            .select("id")
+        if (!products) {
+            return { productIds: [] }
+        }
+        const productIds = products.map(p => Number(p.id));
+
+        return { productIds }
     }
 )

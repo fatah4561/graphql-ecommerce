@@ -103,7 +103,8 @@ export const getUserShop = api(
         if (!shop) {
             throw APIError.notFound("Shop not found")
         }
-        shop.id = Number(shop.id)
+        shop.id = Number(shop.id ?? 0)
+        shop.user_id = Number(shop.user_id ?? 0)
 
         return { shop };
 

@@ -324,20 +324,20 @@ export type ShippingAddressResponse = ErrorResponse | ShippingAddressList;
 export type Shop = {
   __typename?: 'Shop';
   address?: Maybe<Scalars['String']>;
-  city_id: Scalars['Int'];
+  city_id?: Maybe<Scalars['Int']>;
   closed_at?: Maybe<Scalars['String']>;
-  coordinate: Scalars['String'];
+  coordinate?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
-  district_id: Scalars['Int'];
+  district_id?: Maybe<Scalars['Int']>;
   icon?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['Int']>;
-  name: Scalars['String'];
+  name?: Maybe<Scalars['String']>;
   opened_at?: Maybe<Scalars['String']>;
-  postal_code: Scalars['Int'];
-  province_id: Scalars['Int'];
+  postal_code?: Maybe<Scalars['Int']>;
+  province_id?: Maybe<Scalars['Int']>;
   updated_at?: Maybe<Scalars['String']>;
-  user_id: Scalars['Int'];
+  user_id?: Maybe<Scalars['Int']>;
 };
 
 export type ShopList = {
@@ -747,20 +747,20 @@ export type ShippingAddressResponseResolvers<ContextType = any, ParentType exten
 
 export type ShopResolvers<ContextType = any, ParentType extends ResolversParentTypes['Shop'] = ResolversParentTypes['Shop']> = ResolversObject<{
   address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  city_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  city_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   closed_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  coordinate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  coordinate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   created_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  district_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  district_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   icon?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   opened_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  postal_code?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  province_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  postal_code?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  province_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  user_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  user_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
