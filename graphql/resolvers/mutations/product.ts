@@ -6,7 +6,7 @@ import { parseError } from "../../../helpers/error";
 
 export const saveProductMutation: MutationResolvers["saveProduct"] = async (_, { product }: any): Promise<SaveProductResponse> => {
     try {
-        const userShop = await shopClient.getUserShop().catch(err => {
+        const userShop = await shopClient.getUserShop({fields: "*"}).catch(err => {
             const error = err as APIError
             if (error.code == ErrCode.Unauthenticated) {
                 throw  APIError.unauthenticated("Please login first")
