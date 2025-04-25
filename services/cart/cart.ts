@@ -168,3 +168,5 @@ export const deleteMultiCart = api(
         return { ids: arrayIds }
     }
 )
+
+// TODO edge case if user was a guest then login check if the cart product is your own product then delete from cart

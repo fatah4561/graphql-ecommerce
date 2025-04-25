@@ -150,7 +150,7 @@ export const deleteProduct = api(
 
 // validation
 export const isProductOwner = api(
-    { method: "GET", path: "/product:id" },
+    { method: "GET", path: "/product/is-owner:id" },
     async ({ id, userId }: { id: number, userId: number }): Promise<{ isOwner: boolean }> => {
         const product = await Products()
             .where("id", "=", id)
@@ -161,6 +161,31 @@ export const isProductOwner = api(
             return { isOwner: true }
         }
         return { isOwner: false }
+    }
+)
+
+export const isProductsOwner = api(
+    { method: "POST", path: "/product/is-owner" },
+    async ({ productIds }: { productIds: number[] }): Promise<({ products: Record<number, boolean> })> => {
+        const authData = getAuthData()
+        if (!authData || !authData.shopID) {
+            throw APIError.unauthenticated("Please login first")
+        }
+
+        let products: Record<number, boolean> = {}
+
+        const productResults = await Products()
+            .where("shop_id", "=", authData.shopID)
+            .whereIn("id", productIds)
+            .column("id")
+            .select<ProductEntity[]>()
+
+        for (const product of productResults) {
+            if (product.id) {
+                products[Number(product.id)] = true
+            }
+        }
+        return { products }
     }
 )
 
