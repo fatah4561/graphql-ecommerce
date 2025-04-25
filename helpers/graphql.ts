@@ -22,7 +22,10 @@ export function getFields(resolveInfo: GraphQLResolveInfo): Record<string, strin
 
     const fields: Record<string, string[]> = {};
 
-    const recurse = (tree: Record<string, ResolveTree>, parentKey = "") => {
+    const recurse = (
+        tree: Record<string, ResolveTree>,
+        parentKey: string
+    ) => {
         for (const key in tree) {
             const node = tree[key];
             const typenameKeys = Object.keys(node.fieldsByTypeName);
@@ -45,9 +48,14 @@ export function getFields(resolveInfo: GraphQLResolveInfo): Record<string, strin
 
     for (const typeName in parsedInfo.fieldsByTypeName) {
         const fieldTree = parsedInfo.fieldsByTypeName[typeName];
-        
-        if (fieldTree && typeof fieldTree === "object" && !("name" in fieldTree)) {
-            recurse(fieldTree as Record<string, ResolveTree>);
+
+        if (
+            fieldTree &&
+            typeof fieldTree === "object" &&
+            !("name" in fieldTree)
+        ) {
+            // Top-level typename (Cart, ErrorResponse, etc.)
+            recurse(fieldTree as Record<string, ResolveTree>, typeName);
         }
     }
 

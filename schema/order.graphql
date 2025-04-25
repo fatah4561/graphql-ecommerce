@@ -16,8 +16,11 @@ type Order {
     shop_id: Int!
     total_amount: Float!
     status: Int!
+    cancel_note: String
+    cancel_by: Int
     created_at: String
     updated_at: String
+    cancelled_at: String
 
     order_items: [OrderItem]
 }
@@ -41,4 +44,5 @@ extend type Query {
 
 extend type Mutation {
     makeOrder(request: MakeOrderRequest): ErrorResponse
+    cancelOrder(ids: [Int]!, note: String!): ErrorResponse
 }

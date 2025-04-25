@@ -2,6 +2,7 @@ import { api, APIError } from "encore.dev/api";
 import { CartEntity, Carts } from "./db";
 import { getAuthData } from "~encore/auth";
 import { AddToCartRequest } from "../../graphql/__generated__/resolvers-types";
+import log from "encore.dev/log";
 
 // TODO?: maybe do something about the auth / session checking so i don't repeat them like this
 export const getCarts = api(
@@ -39,7 +40,7 @@ export const getCarts = api(
 
 export const addToCart = api(
     { method: "POST", path: "/carts" },
-    async ({ fields, cart, session_id }: { fields: string[], cart: AddToCartRequest, session_id?: string }): Promise<({ cart: CartEntity })> => {
+    async ({ fields, cart, session_id }: { fields: string[], cart: AddToCartRequest, session_id?: string }): Promise<({ carts: CartEntity })> => {
         const authData = getAuthData()
 
         let cartRequest: CartEntity = {
@@ -76,13 +77,14 @@ export const addToCart = api(
 
             let updatedCart = cart[0] as CartEntity
             updatedCart.id = Number(updatedCart.id)
-            return { cart: updatedCart }
+            return { carts: updatedCart }
         }
 
         let newCart = (await Carts().insert(cartRequest, fields))[0]
 
         newCart.id = Number(newCart.id)
-        return { cart: newCart }
+        log.debug("cart", newCart)
+        return { carts: newCart }
     }
 )
 

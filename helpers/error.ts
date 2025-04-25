@@ -27,3 +27,23 @@ export const emptyError = (): ErrorResponse => {
         message: "",
     }
 }
+
+/**
+ * Due to encore backed by rust sometimes rust error is silenced and not returned
+ * Hence still giving success response from the endpoint response
+ * 
+ * Here I attempt to log it if it's rust error and return it as internal APIError
+ * e.g. "An internal error occurred.: InvalidArg, Failed to convert js number to serde_json::Number"
+ * 
+ *  If it's safe error (APIError type then return it)
+ * @param err any
+ * @returns APIError
+ */
+export const handleRustOrAPIError = (err: any): APIError => {
+    if (err instanceof APIError) {
+        return err
+    }
+    
+    log.error("Internal error occurred, ", err)
+    return APIError.internal("Internal error occurred")
+}

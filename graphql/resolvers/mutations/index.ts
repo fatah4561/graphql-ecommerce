@@ -1,7 +1,7 @@
 import { MutationResolvers } from "../../__generated__/resolvers-types";
 import { registerMutation, loginMutation } from "./auth";
 import { addToCartMutation, deleteFromCartMutation, updateCartQtyMutation } from "./cart";
-import { makeOrderMutation } from "./order";
+import { cancelOrderMutation, makeOrderMutation } from "./order";
 import { saveProductMutation, deleteProductMutation } from "./product";
 import { saveShippingAddressMutation } from "./shipping_address";
 import { saveShopMutation } from "./shop";
@@ -22,6 +22,7 @@ const mutations: MutationResolvers = {
     saveShippingAddress: saveShippingAddressMutation,
 
     makeOrder: makeOrderMutation,
+    cancelOrder: cancelOrderMutation,
 };
 
 export default mutations;

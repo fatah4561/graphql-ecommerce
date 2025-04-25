@@ -12,6 +12,12 @@ export enum OrderStatusEnum {
     CANCELLED = 6,
 }
 
+export enum OrderCancelByEnum {
+    SELLER = 0,
+    BUYER = 1,
+    SYSTEM = 2,
+}
+
 const OrderDB = new SQLDatabase("order", {
     migrations: "./migrations"
 })

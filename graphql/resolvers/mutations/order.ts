@@ -1,6 +1,6 @@
 import { APIError } from "encore.dev/api";
 import { emptyError, parseError } from "../../../helpers/error";
-import { ErrorResponse, MutationMakeOrderArgs, MutationResolvers } from "../../__generated__/resolvers-types";
+import { ErrorResponse, MutationCancelOrderArgs, MutationMakeOrderArgs, MutationResolvers } from "../../__generated__/resolvers-types";
 import { getAuthData } from "~encore/auth";
 import { cart as cartClient, order as orderClient, product as productClient, shipping as shippingClient } from "~encore/clients";
 import { ProductEntity } from "../../../services/product/db";
@@ -12,8 +12,7 @@ export const makeOrderMutation: MutationResolvers["makeOrder"] = async (_, { req
             throw APIError.invalidArgument("invalid request")
         }
 
-        const authData = getAuthData()
-        if (!authData) {
+        if (!getAuthData()) {
             throw APIError.unauthenticated("Unauthenticated")
         }
 
@@ -81,4 +80,23 @@ export const makeOrderMutation: MutationResolvers["makeOrder"] = async (_, { req
     }
 }
 
-// TODO! cancel order on status 0 by customer
+export const cancelOrderMutation: MutationResolvers["cancelOrder"] = async (_, { ids, note }: Partial<MutationCancelOrderArgs>): Promise<ErrorResponse> => {
+    try {
+        if (!getAuthData()) {
+            throw APIError.unauthenticated("Unauthenticated")
+        }
+
+        if (!ids || !note) {
+            throw APIError.invalidArgument("ids is invalid")
+        }
+
+        await orderClient.cancelOrder({ids: ids.filter(id => id !== null && id !== undefined), cancel_note: note})
+
+
+        // TODO set delivery status to cancel
+
+        return emptyError()
+    } catch (err) {
+        return parseError(err)
+    }
+}

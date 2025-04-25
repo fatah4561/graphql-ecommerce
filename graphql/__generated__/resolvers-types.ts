@@ -75,6 +75,7 @@ export type MakeOrderRequest = {
 export type Mutation = {
   __typename?: 'Mutation';
   addToCart?: Maybe<AddToCartResponse>;
+  cancelOrder?: Maybe<ErrorResponse>;
   deleteFromCart?: Maybe<ErrorResponse>;
   deleteProduct?: Maybe<ErrorResponse>;
   login?: Maybe<AuthResponse>;
@@ -90,6 +91,12 @@ export type Mutation = {
 
 export type MutationAddToCartArgs = {
   cart?: InputMaybe<AddToCartRequest>;
+};
+
+
+export type MutationCancelOrderArgs = {
+  ids: Array<InputMaybe<Scalars['Int']>>;
+  note: Scalars['String'];
 };
 
 
@@ -146,6 +153,9 @@ export type MutationUpdateCartQtyArgs = {
 
 export type Order = {
   __typename?: 'Order';
+  cancel_by?: Maybe<Scalars['Int']>;
+  cancel_note?: Maybe<Scalars['String']>;
+  cancelled_at?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['Int']>;
   order_items?: Maybe<Array<Maybe<OrderItem>>>;
@@ -602,6 +612,7 @@ export type ErrorResponseResolvers<ContextType = any, ParentType extends Resolve
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   addToCart?: Resolver<Maybe<ResolversTypes['AddToCartResponse']>, ParentType, ContextType, Partial<MutationAddToCartArgs>>;
+  cancelOrder?: Resolver<Maybe<ResolversTypes['ErrorResponse']>, ParentType, ContextType, RequireFields<MutationCancelOrderArgs, 'ids' | 'note'>>;
   deleteFromCart?: Resolver<Maybe<ResolversTypes['ErrorResponse']>, ParentType, ContextType, Partial<MutationDeleteFromCartArgs>>;
   deleteProduct?: Resolver<Maybe<ResolversTypes['ErrorResponse']>, ParentType, ContextType, Partial<MutationDeleteProductArgs>>;
   login?: Resolver<Maybe<ResolversTypes['AuthResponse']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'password' | 'username'>>;
@@ -615,6 +626,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 }>;
 
 export type OrderResolvers<ContextType = any, ParentType extends ResolversParentTypes['Order'] = ResolversParentTypes['Order']> = ResolversObject<{
+  cancel_by?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  cancel_note?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  cancelled_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   created_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   order_items?: Resolver<Maybe<Array<Maybe<ResolversTypes['OrderItem']>>>, ParentType, ContextType>;

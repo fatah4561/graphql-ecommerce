@@ -1,5 +1,4 @@
-import log from "encore.dev/log";
-import { parseError } from "../../../helpers/error";
+import { handleRustOrAPIError, parseError } from "../../../helpers/error";
 import { getFields } from "../../../helpers/graphql";
 import { Order, OrderItem, OrderList, OrdersResponse, QueryOrderArgs, QueryResolvers } from "../../__generated__/resolvers-types";
 import { Context } from "../../graphql";
@@ -25,10 +24,7 @@ export const orderQuery: QueryResolvers["order"] = async (_, { id, as_shop }: Pa
                 id: id ?? 0,
                 fields: fields["Order"].filter(field => field !== "order_items").join(","),
                 as_shop: as_shop ?? false,
-            }).catch(err => {
-                log.error(err)
-                return { order: null }
-            })
+            }).catch(err => { throw handleRustOrAPIError(err) })
 
             if (!order || !order.id) {
                 throw APIError.notFound("Order not found")
@@ -40,22 +36,18 @@ export const orderQuery: QueryResolvers["order"] = async (_, { id, as_shop }: Pa
             if (as_shop) {
                 const { orders } = await orderClient.getShopOrders({
                     fields: fields["orders"].filter(field => field !== "order_items").join(",")
-                }).catch(err => {
-                    log.error(err)
-                    return { orders: [] }
-                })
+                }).catch(err => { throw handleRustOrAPIError(err) })
+
                 ordersEntity = orders
             } else {
                 const { orders } = await orderClient.getMyOrders({
                     fields: fields["orders"].filter(field => field !== "order_items").join(",")
-                }).catch(err => {
-                    log.error(err)
-                    return { orders: [] }
-                })
+                }).catch(err => { throw handleRustOrAPIError(err) })
+
                 ordersEntity = orders
             }
 
-            if (!ordersEntity) {
+            if (!ordersEntity || ordersEntity.length == 0) {
                 throw APIError.notFound("Order not found")
             }
 
@@ -73,10 +65,7 @@ export const orderQuery: QueryResolvers["order"] = async (_, { id, as_shop }: Pa
             const { orderItems } = await orderClient.getOrderItems({
                 fields: fields["order_items"].join(","),
                 order_ids: orderIds.join(",") ?? ""
-            }).catch(err => {
-                log.error(err)
-                return { orderItems: null }
-            })
+            }).catch(err => { throw handleRustOrAPIError(err) })
 
             if (orderItems) {
                 orderItemsEntity = orderItems

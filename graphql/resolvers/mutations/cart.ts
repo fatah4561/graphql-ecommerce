@@ -4,6 +4,7 @@ import { AddToCartResponse, ErrorResponse, MutationAddToCartArgs, MutationDelete
 import { Context } from "../../graphql";
 import { getFields } from "../../../helpers/graphql";
 import { parseError } from "../../../helpers/error";
+import log from "encore.dev/log";
 
 export const addToCartMutation: MutationResolvers["addToCart"] = async (_, { cart }: Partial<MutationAddToCartArgs>, context: Context, info): Promise<AddToCartResponse> => {
     try {
@@ -20,8 +21,12 @@ export const addToCartMutation: MutationResolvers["addToCart"] = async (_, { car
 
         // TODO! validate if adding self products
 
-        const carts = await cartClient.addToCart({ fields, cart, session_id: context.session_id })
-        return { ...carts.cart }
+        const {carts} = await cartClient.addToCart({ fields, cart, session_id: context.session_id }).catch(err => {
+            log.error(err);
+            return {carts: {}}
+        })
+
+        return { ...carts }
     } catch (err) {
         return parseError(err)
     }

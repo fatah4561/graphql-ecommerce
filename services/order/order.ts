@@ -1,9 +1,8 @@
 import { api, APIError } from "encore.dev/api";
-import { OrderEntity, OrderItemEntity, OrderItems, Orders, OrderStatusEnum, RawOrder } from "./db";
+import { OrderCancelByEnum, OrderEntity, OrderItemEntity, OrderItems, Orders, OrderStatusEnum, RawOrder } from "./db";
 import { getAuthData } from "~encore/auth";
 import { CartEntity } from "../cart/db";
 import { ProductEntity } from "../product/db";
-import log from "encore.dev/log";
 
 export const getMyOrders = api(
     { method: "GET", path: "/order", auth: true },
@@ -97,8 +96,6 @@ export const getSingleOrder = api(
         order.id = Number(order.id)
         order.total_amount = Number(order.total_amount)
 
-        log.debug("order", order)
-
         return { order }
     }
 )
@@ -109,6 +106,10 @@ export const getOrderItems = api( // when user request items detail
         const authData = getAuthData()
         if (!authData) {
             throw APIError.unauthenticated("Unauthenticated")
+        }
+
+        if (!order_ids) {
+            return { orderItems: [] }
         }
 
         const query = OrderItems().whereIn("order_id", order_ids.split(","))
@@ -193,5 +194,65 @@ export const createOrder = api(
             })
         }
         return { orderIds }
+    }
+)
+
+// able to cancel both shop and buyer order at once (wow.wav)
+export const cancelOrder = api(
+    { method: "PUT", path: "/order:id", auth: true },
+    async ({ ids, cancel_note }: { ids: number[], cancel_note: string }): Promise<({ cancelledIds: number[] })> => {
+        const authData = getAuthData()
+        if (!authData) {
+            throw APIError.unauthenticated("Unauthenticated")
+        }
+
+        const orders = await Orders()
+            .whereIn("status", [
+                OrderStatusEnum.PENDING,
+                // OrderStatusEnum.PAID, // TODO must add refund
+            ])
+            .whereIn("id", ids)
+            .andWhere(db => {
+                db.where("user_id", "=", authData.userID)
+                .orWhere("shop_id", "=", authData.shopID)
+            })
+            .select<OrderEntity[]>()
+        
+        let cancelAsUserIds: number[] = []
+        let cancelAsShopIds: number[] = []
+
+        orders.forEach(order => {
+            if (!order.id || !order.user_id || !order.shop_id) {
+                return
+            }
+
+            if (order.user_id.toString() == authData.userID) {
+                cancelAsUserIds.push(Number(order.id))
+            } else if (order.shop_id == authData.shopID) {
+                cancelAsShopIds.push(Number(order.id))
+            }
+        })
+
+        await Orders()
+        .whereIn("id", cancelAsUserIds)
+        .update({
+            status: OrderStatusEnum.CANCELLED,
+            cancel_note,
+            cancel_by: OrderCancelByEnum.BUYER,
+            updated_at: (new Date()).toISOString(),
+            cancelled_at: (new Date()).toISOString(),
+        })
+
+        await Orders()
+        .whereIn("id", cancelAsShopIds)
+        .update({
+            status: OrderStatusEnum.CANCELLED,
+            cancel_note,
+            cancel_by: OrderCancelByEnum.SELLER,
+            updated_at: (new Date()).toISOString(),
+            cancelled_at: (new Date()).toISOString(),
+        })
+
+        return { cancelledIds: [...cancelAsShopIds, ...cancelAsUserIds].sort() }
     }
 )
