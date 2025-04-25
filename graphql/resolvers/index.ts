@@ -1,7 +1,7 @@
 import { Resolvers } from "../__generated__/resolvers-types"
 import Query from "./queries/index"
 import Mutation from "./mutations/index"
-import {authResponseResolver, productsResponseResolver, profileResponseResolver, saveProductResolver, shopsResponseResolver} from "./resolve_type";
+import * as resolve_type from "./resolve_type";
 
 const resolvers: Resolvers = {
     // action
@@ -9,11 +9,22 @@ const resolvers: Resolvers = {
     Mutation,
 
     // union response resolver
-    AuthResponse: authResponseResolver,
-    ShopsResponse: shopsResponseResolver,
-    ProfileResponse: profileResponseResolver,
-    ProductsResponse: productsResponseResolver,
-    SaveProductResponse: saveProductResolver,
+    AuthResponse: resolve_type.authResponseResolver,
+
+    ShopsResponse: resolve_type.shopsResponseResolver,
+
+    ProfileResponse: resolve_type.profileResponseResolver,
+
+    ProductsResponse: resolve_type.productsResponseResolver,
+    SaveProductResponse: resolve_type.saveProductResolver,
+
+    CartsResponse: resolve_type.cartsResponseResolver,
+    AddToCartResponse: resolve_type.addToCartResponseResolver,
+
+    SaveShippingAddressResponse: resolve_type.saveShippingAddressResponseResolver,
+    ShippingAddressResponse: resolve_type.shippingAddressResponseResolver,
+
+    OrdersResponse: resolve_type.ordersResponseResolver,
 };
 
 export default resolvers;

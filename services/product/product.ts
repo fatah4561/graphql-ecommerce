@@ -1,14 +1,16 @@
-import { api, APIError, ErrCode } from "encore.dev/api";
+import { api, APIError } from "encore.dev/api";
 import { PaginationRequest, SaveProductRequest } from "../../graphql/__generated__/resolvers-types";
 import { Products, ProductEntity } from "./db";
 import { getAuthData } from "~encore/auth";
+import log from "encore.dev/log";
 
 export interface GetProductParams extends PaginationRequest {
-    q: string
+    q?: string
     fields?: string
     shopId?: number
     productId?: number
-    isOwner: boolean
+    productIds?: string
+    isOwner: boolean // owner show deleted product
 }
 
 export const getProducts = api(
@@ -24,7 +26,9 @@ export const getProducts = api(
         }
 
         if (params.productId) {
-            query.andWhere("product_id", "=", params.productId)
+            query.andWhere("id", "=", params.productId)
+        } else if (params.productIds) {
+            query.whereIn("id", params.productIds.split(","))
         }
 
         if (params.shopId) {
@@ -55,6 +59,7 @@ export const getProducts = api(
         return {
             products: products.map(product => ({
                 ...product,
+                price: parseFloat(String(product.price ?? "0")),
                 shop_id: product.shop_id ?? 0,
                 user_id: product.user_id ?? 0,
             })),
@@ -73,11 +78,14 @@ export const saveProduct = api(
         }
 
         const authData = getAuthData()
-        if (!authData) {
+        if (!authData) { // TODO! on auth:true this is not needed
             throw APIError.unauthenticated("Unauthenticated")
         }
 
         // --end validation
+        if (!product.id) {
+            product.id = undefined
+        }
 
         const productRequest: ProductEntity = {
             shop_id: shopId,
@@ -129,21 +137,21 @@ export const deleteProduct = api(
             .returning("id")
 
         if (product.deleted_at) { // permanent deletion
-            const deletedId = await deleteQuery.delete() as { id: number}[]
+            const deletedId = await deleteQuery.delete() as { id: number }[]
             return { deletedId: deletedId[0].id }
         } else { // soft delete
             const deletedId = await deleteQuery
                 .update({
                     "deleted_at": (new Date()).toISOString(),
-                }) as { id: number}[]
-            return { deletedId: deletedId[0].id  }
+                }) as { id: number }[]
+            return { deletedId: deletedId[0].id }
         }
     }
 )
 
 // validation
 export const isProductOwner = api(
-    { method: "GET", path: "/product:id" },
+    { method: "GET", path: "/product/is-owner:id" },
     async ({ id, userId }: { id: number, userId: number }): Promise<{ isOwner: boolean }> => {
         const product = await Products()
             .where("id", "=", id)
@@ -154,5 +162,70 @@ export const isProductOwner = api(
             return { isOwner: true }
         }
         return { isOwner: false }
+    }
+)
+
+export const isProductsOwner = api(
+    { method: "POST", path: "/product/is-owner" },
+    async ({ productIds }: { productIds: number[] }): Promise<({ products: Record<number, boolean> })> => {
+        const authData = getAuthData()
+        if (!authData || !authData.shopID) {
+            throw APIError.unauthenticated("Please login first")
+        }
+
+        let products: Record<number, boolean> = {}
+
+        const productResults = await Products()
+            .where("shop_id", "=", authData.shopID)
+            .whereIn("id", productIds)
+            .column("id")
+            .select<ProductEntity[]>()
+
+        for (const product of productResults) {
+            if (product.id) {
+                products[Number(product.id)] = true
+            }
+        }
+        return { products }
+    }
+)
+
+export const checkProductsExist = api(
+    { method: "POST", path: "/product/check-exist" },
+    async ({ productIds }: { productIds: number[] }): Promise<({ products: Record<number, boolean> })> => {
+        let products: Record<number, boolean> = {}
+
+        const productResults = await Products().whereIn("id", productIds).
+            column("id").
+            select<ProductEntity[]>()
+
+        for (const product of productResults) {
+            if (product.id) {
+                products[Number(product.id)] = true
+            }
+        }
+        return { products }
+    }
+)
+
+// helpers
+export const getMyProductIds = api(
+    { method: "GET", path: "/products/mine-as-ids" },
+    async (): Promise<({ productIds: number[] })> => {
+
+        const authData = getAuthData()
+        if (!authData || !authData.userID) {
+            return { productIds: [] }
+        }
+
+        const products = await Products()
+            .where("user_id", "=", authData.userID)
+            .select("id")
+        if (!products) {
+            return { productIds: [] }
+        }
+        const productIds = products.map(p => Number(p.id));
+
+        return { productIds }
     }
 )

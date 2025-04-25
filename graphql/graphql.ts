@@ -6,14 +6,16 @@ import resolvers from "./resolvers";
 import packageJson from "../package.json";
 import { BaseResponse } from "./__generated__/resolvers-types";
 import { join } from "node:path";
+import { getSessionIdFromCookies, setSessionCookie } from "../helpers/cookie";
 
 const typeDefs = readdirSync("./schema")
-  .filter(file => file.endsWith(".graphql")) // Get only .graphql files
-  .map(file => readFileSync(join("./schema", file), { encoding: "utf-8" })); // Read them
+    .filter(file => file.endsWith(".graphql")) // Get only .graphql files
+    .map(file => readFileSync(join("./schema", file), { encoding: "utf-8" })); // Read them
 
 export const version = packageJson.version
 
-export interface Context { // TODO?: maybe just remove it
+export interface Context {
+    session_id: string
 }
 
 const server = new ApolloServer<Context>({
@@ -24,7 +26,7 @@ const server = new ApolloServer<Context>({
 await server.start();
 
 export const graphqlAPI = api.raw(
-    {expose: true, path: "/graphql", method: "*"},
+    { expose: true, path: "/graphql", method: "*" }, // the only exposed API
     async (req, res) => {
         server.assertStarted("/graphql");
 
@@ -40,11 +42,17 @@ export const graphqlAPI = api.raw(
 
             const body: BaseResponse = {
                 code: "success",
-                message: "graphql e-commerce by fatah4561 v" + version,
+                message: "backend graphql e-commerce by fatah4561 v" + version,
                 success: true
             }
             res.end(JSON.stringify(body));
             return
+        }
+
+        // cookie
+        let session_id = getSessionIdFromCookies(req)
+        if (!session_id) {
+            session_id = setSessionCookie(res)
         }
 
         const httpGraphqlResponse = await server.executeHTTPGraphQLRequest({
@@ -55,7 +63,7 @@ export const graphqlAPI = api.raw(
                 search: new URLSearchParams(req.url ?? "").toString(),
             },
             context: async () => {
-                return {req, res};
+                return { req, res, session_id: session_id };
             }
         })
 

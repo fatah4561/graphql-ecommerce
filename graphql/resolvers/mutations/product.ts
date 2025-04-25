@@ -2,10 +2,11 @@ import { APIError, ErrCode } from "encore.dev/api";
 import { shop as shopClient, product as productClient } from "~encore/clients";
 import { ErrorResponse, MutationDeleteProductArgs, MutationResolvers, SaveProductRequest, SaveProductResponse } from "../../__generated__/resolvers-types";
 import { getAuthData } from "~encore/auth";
+import { parseError } from "../../../helpers/error";
 
 export const saveProductMutation: MutationResolvers["saveProduct"] = async (_, { product }: any): Promise<SaveProductResponse> => {
     try {
-        const userShop = await shopClient.getUserShop().catch(err => {
+        const userShop = await shopClient.getUserShop({fields: "*"}).catch(err => {
             const error = err as APIError
             if (error.code == ErrCode.Unauthenticated) {
                 throw  APIError.unauthenticated("Please login first")
@@ -25,11 +26,7 @@ export const saveProductMutation: MutationResolvers["saveProduct"] = async (_, {
         })
         return { ...savedProduct }
     } catch (err) {
-        const apiError = err as APIError
-        return {
-            code: apiError.code,
-            message: apiError.message,
-        };
+        return parseError(err)
     }
 }
 
@@ -54,10 +51,6 @@ export const deleteProductMutation: MutationResolvers["deleteProduct"] = async(_
 
         return {code: "", message:""}
     } catch(err) {
-        const apiError = err as APIError
-        return {
-            code: apiError.code,
-            message: apiError.message,
-        };
+        return parseError(err)
     }
 }

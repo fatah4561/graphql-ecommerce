@@ -1,0 +1,37 @@
+# request & response
+input AddToCartRequest {
+    shop_id: Int!
+    product_id: Int!
+    qty: Int!
+}
+
+union AddToCartResponse = Cart | ErrorResponse
+
+union CartsResponse = CartList | ErrorResponse
+
+type CartList {
+    carts: [Cart]
+}
+
+# model
+type Cart {
+    id: Int
+    shop_id: Int
+    product_id: Int
+    qty: Int
+    # TODO add price 
+    is_product_deleted: Boolean
+    created_at: String
+    updated_at: String
+}
+
+# action
+extend type Query {
+    cart: CartsResponse
+}
+
+extend type Mutation {
+    addToCart(cart: AddToCartRequest): AddToCartResponse
+    updateCartQty(id: Int, qty: Int): ErrorResponse
+    deleteFromCart(id: Int): ErrorResponse
+}

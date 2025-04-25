@@ -1,10 +1,13 @@
-import { APIError } from "encore.dev/api";
 import { user } from "~encore/clients";
 import { getFields } from "../../../helpers/graphql";
 import { QueryResolvers, ProfileResponse } from "../../__generated__/resolvers-types";
 import { productsQuery } from "./product";
 import { shopsQuery } from "./shop";
 import { Context, version } from "../../graphql";
+import { cartQuery } from "./cart";
+import { parseError } from "../../../helpers/error";
+import { shippingAddressQuery } from "./shipping_address";
+import { orderQuery } from "./order";
 
 const queries: QueryResolvers<Context> = {
     version: async (): Promise<string> => {
@@ -22,16 +25,15 @@ const queries: QueryResolvers<Context> = {
                 user: { ...profile.user }
             }
         } catch (err) {
-            const apiError = err as APIError
-            return {
-                code: apiError.code ?? "UNKNOWN_ERROR", // Default to a non-null value
-                message: apiError.message ?? "An unknown error occurred",
-            }
+            return parseError(err)
         }
 
     },
     shops: shopsQuery,
     products: productsQuery,
+    cart: cartQuery,
+    shippingAddress: shippingAddressQuery,
+    order: orderQuery
 };
 
 export default queries

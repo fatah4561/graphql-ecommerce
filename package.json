@@ -1,7 +1,7 @@
 {
   "name": "graphql-eccommerce",
   "private": true,
-  "version": "0.0.5",
+  "version": "0.8.0",
   "description": "My implementation of graphql in e-commerce (fatah4561)",
   "license": "MPL-2.0",
   "type": "module",
@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "@apollo/server": "^4.11.0",
-    "bcrypt": "^5.1.1",
     "bcrypt-ts": "^5.0.3",
     "encore.dev": "^1.46.0",
     "graphql": "^16.9.0",
