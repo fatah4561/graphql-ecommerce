@@ -6,9 +6,10 @@ This project is a feature-rich GraphQL e-commerce backend built with **Encore.ts
 It serves as my personal learning journal for **TypeScript, GraphQL, and Encore.ts** on the backend.
 
 I designed this project with a strong emphasis on:
-✅ Readability & Maintainability
-✅ Clean Code & Separation of Concerns (SoC)
-✅ Flexibility to Adapt into a REST API (thanks to encore, might need some modifications)
+
+✅ Readability & Maintainability\
+✅ Clean Code & Separation of Concerns (SoC)\
+✅ Flexibility to Adapt into a REST API (thanks to encore, might still need some modifications)
 
 Basic Features
 
