@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.8.0",
   "description": "My implementation of graphql in e-commerce (fatah4561)",
-  "license": "MPL-2.0",
+  "license": "AGPL-3.0-only",
   "type": "module",
   "app-config": {
     "timezone": "+0700"
