@@ -107,3 +107,9 @@ encore test
 
 * Payment system design [by system design classroom](https://newsletter.systemdesignclassroom.com/p/every-backend-engineer-needs-to-know?ref=dailydev)
 * Fast typescript analyzer (helps in making code clean) [here](https://ftaproject.dev/playground)
+
+## License
+
+This project is licensed under the GNU Affero General Public License v3 (AGPL-3.0-only).
+
+It also depends on [Encore](https://encore.dev), which is licensed under the Mozilla Public License 2.0 (MPL-2.0).
