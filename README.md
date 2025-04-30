@@ -2,8 +2,8 @@
 
 ## About
 
-This project is a feature-rich GraphQL e-commerce backend built with **Encore.ts** and **Apollo Server**.
-It serves as my personal learning journal for **TypeScript, GraphQL, and Encore.ts** on the backend.
+This project is a feature-rich GraphQL e-commerce backend built with --Encore.ts-- and --Apollo Server--.
+It serves as my personal learning journal for --TypeScript, GraphQL, and Encore.ts-- on the backend.
 
 I designed this project with a strong emphasis on:
 
@@ -13,37 +13,40 @@ I designed this project with a strong emphasis on:
 
 Basic Features
 
-* [X] Basic JWT Authentication & Registration (username & password) hashed with bcrypt
-* [X] Single user manage single shop
-* [X] User manage their products
-* [X] View products with keyset pagination
-* [ ] User file management (e.g product image), since grapqhl can't serve file directly a separate file management system is needed with REST API
-* [ ] Payment system (using 3rd party payment gateway)
-* [X] Cart system able to add items as guest, but account is required on checkout
-* [X] Ordering system able to order multi products of different shops (split the delivery per shop)
-* [ ] Order histories
-* [X] User can have multiple shipping address (on checkout can choose only 1)
-* [ ] Delivery & tracking system
-* [X] User has multiple delivery address
-* [ ] Reviews system (rating, comment, images)
-* [ ] Wishlist system
-* [ ] DIscount system
-* [ ] API docs
-* [ ] Cronjob to reset the app data each day for encore cloud (preventing abuse on my free plan -.-)
-* [ ] Unit Test
+- [X] Basic JWT Authentication & Registration (username & password) hashed with bcrypt
+- [X] Single user manage single shop
+- [X] User manage their products
+- [X] View products with keyset pagination
+- [ ] User file management (e.g product image), since grapqhl can't serve file directly a separate file management system is needed with REST API
+- [ ] Payment system (using 3rd party payment gateway)
+- [X] Cart system able to add items as guest, but account is required on checkout
+- [X] Ordering system able to order multi products of different shops (split the delivery per shop)
+- [ ] Order histories
+- [X] User can have multiple shipping address (on checkout can choose only 1)
+- [ ] Delivery & tracking system
+- [X] User has multiple delivery address
+- [ ] Reviews system (rating, comment, images)
+- [ ] Wishlist system
+- [ ] DIscount system
+- [ ] API docs
+- [ ] Cronjob to reset the app data each day for encore cloud (preventing abuse on my free plan -.-)
+- [ ] Unit Test
 
 Advance Features
 
-* [ ] Multi factor authentication (MFA)
-* [ ] Oauth or social login (Google, Facebook)
-* [ ] Rate limiting (especially on login and register)
-* [ ] Caching for cart system (using redis)
-* [ ] If guest has products in cart on log in merge the cart
-* [ ] Retry capabilities on payment system (on 5 retry considered payment really failed)
-* [ ] Products variant & categories system
-* [ ] Admin dashboard for analytic
-* [ ] Action logs system (turn into EDA in some services)
-* [ ] Features flag system (to enable or disable some feature)
+- [ ] Toggle Auth Features (at least basic JWT or Passkey must be enabled):
+  - Multi factor authentication (MFA)
+  - OAuth
+  - Social login (Google, Facebook)
+  - Passkey
+- [ ] Rate limiting (especially on login and register)
+- [ ] Caching for cart system (using redis)
+- [ ] If guest has products in cart, on log in merge the cart
+- [ ] Retry capabilities on payment system (on 5 retries consider payment really failed)
+- [ ] Product variants & categories system
+- [ ] Admin dashboard for analytics
+- [ ] Action logs system (turn into EDA in some services)
+- [ ] Feature flag system (to enable or disable some features)
 
 ## Try in sandbox
 
@@ -55,8 +58,8 @@ https://staging-graphql-ecommerce-cpvi.encr.app/graphql
 
 You can use the sandbox account
 
-* username: techguy
-* password: password
+- username: `techguy`
+- password: `password`
 
 Or create a new account
 
@@ -94,9 +97,9 @@ cat private.txt | encore secret set --type dev,local JWK_PRIVATE_KEY
 
 ## Code design notes
 
-* Naming convention:
-  * function parameters and fields use snake_case (session_id)
-  * variable name and function use camelCase (sessionId)
+- Naming convention:
+  - function parameters and fields use snake_case (session_id)
+  - variable name and function use camelCase (sessionId)
 
 ## Testing
 
@@ -106,8 +109,8 @@ encore test
 
 ## References
 
-* Payment system design [by system design classroom](https://newsletter.systemdesignclassroom.com/p/every-backend-engineer-needs-to-know?ref=dailydev)
-* Fast typescript analyzer (helps in making code clean) [here](https://ftaproject.dev/playground)
+- Payment system design [by system design classroom](https://newsletter.systemdesignclassroom.com/p/every-backend-engineer-needs-to-know?ref=dailydev)
+- Fast typescript analyzer (helps in making code clean) [here](https://ftaproject.dev/playground)
 
 ## License
 
