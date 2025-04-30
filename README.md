@@ -2,8 +2,9 @@
 
 ## About
 
-This project is a feature-rich GraphQL e-commerce backend built with --Encore.ts-- and --Apollo Server--.
-It serves as my personal learning journal for --TypeScript, GraphQL, and Encore.ts-- on the backend.
+This project is a feature-rich GraphQL e-commerce backend built with **Encore.ts** and **Apollo Server**.
+It serves as my personal learning journal for **TypeScript, GraphQL, and Encore.ts** on the backend. 
+While this project aimed to be production ready it is not recommended to deploy to production as it is, some configuration is required before deploying to production contact me for details.
 
 I designed this project with a strong emphasis on:
 
