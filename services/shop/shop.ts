@@ -1,8 +1,7 @@
-import { api, APIError, ErrCode } from "encore.dev/api"
+import { api, APIError } from "encore.dev/api"
 import { ShopEntity, Shops } from "./db"
 import { PaginationRequest, SaveShopRequest } from "../../graphql/__generated__/resolvers-types"
-import { isValidTimeFormat } from "../../helpers/time"
-import packageJson from "../../package.json"
+import { currentTimezoneOffset, isValidTimeFormat } from "../../helpers/time"
 import { getAuthData } from "~encore/auth"
 
 export interface GetShopParams extends PaginationRequest {
@@ -139,12 +138,13 @@ export const saveShop = api(
         if (shop.opened_at && !isValidTimeFormat(shop.opened_at)) {
             throw APIError.invalidArgument("Invalid time format for opened_at")
         }
-        shop.opened_at = shop.opened_at ? shop.opened_at + packageJson["app-config"].timezone : "00:00:00+0000"
+        shop.opened_at = shop.opened_at ? shop.opened_at + currentTimezoneOffset() : "00:00:00+0000"
 
         if (shop.closed_at && !isValidTimeFormat(shop.closed_at)) {
             throw APIError.invalidArgument("Invalid time format for opened_at")
         }
-        shop.closed_at = shop.closed_at ? shop.closed_at + packageJson["app-config"].timezone : "00:00:00+0000"
+        shop.closed_at = shop.closed_at ? shop.closed_at + currentTimezoneOffset() : "00:00:00+0000"
+        // TODO validate if the opened_at is > closed_at
         // --end validation
 
         const shopRequest: ShopEntity = {
