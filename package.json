@@ -5,10 +5,8 @@
   "description": "My implementation of graphql in e-commerce (fatah4561)",
   "license": "AGPL-3.0-only",
   "type": "module",
-  "app-config": {
-    "timezone": "+0700"
-  },
   "scripts": {
+    "dev": "encore run",
     "encore": "encore run",
     "generate": "graphql-codegen --config codegen.yml"
   },
@@ -16,6 +14,7 @@
     "@graphql-codegen/cli": "^5.0.3",
     "@graphql-codegen/typescript": "2.8.8",
     "@graphql-codegen/typescript-resolvers": "2.7.13",
+    "@types/luxon": "^3.6.2",
     "@types/node": "^20.5.7",
     "typescript": "^5.2.2"
   },
@@ -28,6 +27,8 @@
     "graphql-tag": "^2.12.6",
     "jose": "^5.9.6",
     "knex": "^3.1.0",
-    "pg": "^8.13.1"
+    "luxon": "^3.6.1",
+    "pg": "^8.13.1",
+    "yaml": "^2.7.1"
   }
 }
