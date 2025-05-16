@@ -3,6 +3,7 @@ import YAML from "yaml"
 
 interface AppConfig {
     timezone: string;
+    tokenExpiration: string;
 }
 
 function loadApConfig() {
