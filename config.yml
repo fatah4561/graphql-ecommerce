@@ -1,2 +1,3 @@
 app:
   timezone: Asia/Jakarta
+  tokenExpiration: 8h

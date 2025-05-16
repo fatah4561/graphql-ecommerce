@@ -9,6 +9,7 @@ import { UserDetailEntity, UserEntity } from "../user/db"
 import { ShopEntity } from "../shop/db"
 import { UserRegisterRequest } from "../../graphql/__generated__/resolvers-types"
 import { SignJWT, jwtVerify, generateKeyPair, exportPKCS8, importPKCS8, exportSPKI, importSPKI, KeyLike } from 'jose';
+import { appConfig } from "../../helpers/app_config"
 
 // TODO? maybe use ES256 (ECDSA) or EdDSA for smaller bandwidth with equivalent security of RS256, PS256 but also faster
 const jwkPublicKey = secret("JWK_PUBLIC_KEY")
@@ -136,6 +137,6 @@ export async function generateToken(user: UserEntity, shop?: ShopEntity): Promis
         setIssuedAt().
         setIssuer(packageJson.name).
         setAudience(packageJson.name).
-        setExpirationTime('4h').
+        setExpirationTime(appConfig().tokenExpiration ?? '4h').
         sign(privateKey)
 }
