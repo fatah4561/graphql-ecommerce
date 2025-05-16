@@ -1,12 +1,14 @@
 import { api, APIError, ErrCode } from "encore.dev/api"
+import { user as userClient } from "~encore/clients"
+import { secret } from "encore.dev/config"
+
 import packageJson from '../../package.json'
 import { compare, genSalt, hash } from "bcrypt-ts"
 
-import { UserDetailEntity, UserDetails, UserEntity, Users } from "../user/db"
+import { UserDetailEntity, UserEntity } from "../user/db"
+import { ShopEntity } from "../shop/db"
 import { UserRegisterRequest } from "../../graphql/__generated__/resolvers-types"
 import { SignJWT, jwtVerify, generateKeyPair, exportPKCS8, importPKCS8, exportSPKI, importSPKI, KeyLike } from 'jose';
-import { secret } from "encore.dev/config"
-import { ShopEntity } from "../shop/db"
 
 // TODO? maybe use ES256 (ECDSA) or EdDSA for smaller bandwidth with equivalent security of RS256, PS256 but also faster
 const jwkPublicKey = secret("JWK_PUBLIC_KEY")
@@ -26,10 +28,8 @@ export const register = api(
     { method: "POST", path: "/register" },
     async ({ request }: { request: UserRegisterRequest }): Promise<{ token: string }> => {
         // check email registered
-        const existedUser = await Users().where("email", "=", request.email)
-            .select<UserEntity>("email").
-            first()
-        if (existedUser?.email) {
+        const { registered } = await userClient.checkEmailRegistered({ email: request.email })
+        if (registered) {
             throw APIError.invalidArgument("Email is registered")
         }
 
@@ -39,27 +39,22 @@ export const register = api(
             username: request.username,
             email: request.email,
             password_hash: hashPass,
-            created_at: (new Date()).toISOString(),
-            updated_at: (new Date()).toISOString(),
         }
-
-        const user = (await Users().insert(newUser, "*"))[0]
+        const { userId } = await userClient.createUser({ request: newUser })
+        newUser.id = userId
 
         // insert detail
         const newUserDetail: UserDetailEntity = {
-            user_id: user.id,
+            user_id: userId,
             fullname: request.fullname,
             address: request.address,
             province_id: request.province_id ?? undefined,
             city_id: request.city_id ?? undefined,
             district_id: request.district_id ?? undefined,
-
-            created_at: (new Date()).toISOString(),
-            updated_at: (new Date()).toISOString(),
         }
-        await UserDetails().insert(newUserDetail)
+        await userClient.createUserDetail({ request: newUserDetail })
 
-        const token = await generateToken(user)
+        const token = await generateToken(newUser)
         return { token }
     }
 )
@@ -67,10 +62,7 @@ export const register = api(
 export const login = api(
     { method: "POST", path: "/login" },
     async ({ username, password }: { username: string, password: string }): Promise<{ user: UserEntity }> => {
-        const user = await Users().
-            where("username", username).
-            select("id", "username", "password_hash").
-            first()
+        const { user } = await userClient.getSingleUser({ username, fields: "id,username,password_hash" })
 
         if (!user) {
             throw APIError.invalidArgument("username " + username + " not found")
@@ -89,7 +81,7 @@ export const login = api(
 export const verify = api(
     { method: "POST", path: "/verify" },
     async ({ token }: { token: string }): Promise<{ claims: Claims }> => {
-        try {            
+        try {
             const { payload } = await jwtVerify(token, publicKey, {
                 issuer: packageJson.name,
                 audience: packageJson.name,
@@ -99,7 +91,7 @@ export const verify = api(
                 user_name: payload.user_name as string,
                 shop_id: payload.shop_id as number,
             }
-    
+
             return { claims }
         } catch (err) {
             throw APIError.unauthenticated(String(err))
@@ -130,7 +122,7 @@ async function getKey(): Promise<{ publicKey: KeyLike, privateKey: KeyLike }> {
 
 export async function generateToken(user: UserEntity, shop?: ShopEntity): Promise<string> {
     if (!user.id) {
-        throw APIError.unauthenticated("unauthenticated") 
+        throw APIError.unauthenticated("unauthenticated")
     }
 
     return await new SignJWT({
