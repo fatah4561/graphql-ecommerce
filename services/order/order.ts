@@ -1,5 +1,5 @@
 import { api, APIError } from "encore.dev/api";
-import { OrderCancelByEnum, OrderEntity, OrderItemEntity, OrderItems, Orders, OrderStatusEnum, RawOrder } from "./db";
+import { OrderCancelByEnum, OrderEntity, OrderItemEntity, OrderItems, Orders, OrderStatusEnum } from "./db";
 import { getAuthData } from "~encore/auth";
 import { CartEntity } from "../cart/db";
 import { ProductEntity } from "../product/db";
