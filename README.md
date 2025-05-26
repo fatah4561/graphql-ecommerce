@@ -19,6 +19,7 @@ Basic Features
 - [X] User manage their products
 - [X] View products with keyset pagination
 - [ ] User file management (e.g product image), since grapqhl can't serve file directly a separate file management system is needed with REST API
+  - User image uploads are sanitized — GPS and other EXIF metadata are removed before storage to protect user privacy.
 - [ ] Payment system (using 3rd party payment gateway)
 - [X] Cart system able to add items as guest, but account is required on checkout
 - [X] Ordering system able to order multi products of different shops (split the delivery per shop)
