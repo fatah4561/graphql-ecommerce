@@ -101,3 +101,13 @@ export const ordersResponseResolver: Resolvers["OrdersResponse"] = {
         return null;
     }
 }
+
+export const paymentOptionResponseResolver: Resolvers["PaymentOptionResponse"] = {
+    __resolveType(obj) {
+        if ("message" in obj && "code" in obj) {
+            return "ErrorResponse";
+        }
+
+        return "PaymentOptionList";
+    }
+}

@@ -6,6 +6,7 @@
   "license": "AGPL-3.0-only",
   "type": "module",
   "scripts": {
+    "load-env": "ts-node scripts/load_env.ts",
     "dev": "encore run",
     "encore": "encore run",
     "generate": "graphql-codegen --config codegen.yml"
@@ -16,7 +17,8 @@
     "@graphql-codegen/typescript-resolvers": "2.7.13",
     "@types/luxon": "^3.6.2",
     "@types/node": "^20.5.7",
-    "typescript": "^5.2.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "@apollo/server": "^4.12.0",

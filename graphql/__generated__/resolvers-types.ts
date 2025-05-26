@@ -67,6 +67,12 @@ export type ErrorResponse = {
   message: Scalars['String'];
 };
 
+export type GetPaymentOptionRequest = {
+  active?: InputMaybe<Scalars['Boolean']>;
+  id?: InputMaybe<Scalars['Int']>;
+  type?: InputMaybe<PaymentType>;
+};
+
 export type MakeOrderRequest = {
   cart_id?: InputMaybe<Array<Scalars['Int']>>;
   shipping_address_id?: InputMaybe<Scalars['Int']>;
@@ -198,6 +204,34 @@ export type PaginationResponse = {
   total_data?: Maybe<Scalars['Int']>;
 };
 
+export type PaymentOption = {
+  __typename?: 'PaymentOption';
+  active: Scalars['Boolean'];
+  id: Scalars['Int'];
+  logo?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  type: PaymentType;
+};
+
+export type PaymentOptionList = {
+  __typename?: 'PaymentOptionList';
+  paymentOptions?: Maybe<Array<Maybe<PaymentOption>>>;
+};
+
+export type PaymentOptionResponse = ErrorResponse | PaymentOptionList;
+
+export enum PaymentType {
+  BankTransfer = 'BANK_TRANSFER',
+  Cash = 'CASH',
+  CreditCard = 'CREDIT_CARD',
+  Crypto = 'CRYPTO',
+  DebitCard = 'DEBIT_CARD',
+  EWallet = 'E_WALLET',
+  Installment = 'INSTALLMENT',
+  Other = 'OTHER',
+  QrPayment = 'QR_PAYMENT'
+}
+
 export type Product = {
   __typename?: 'Product';
   created_at?: Maybe<Scalars['String']>;
@@ -233,6 +267,7 @@ export type Query = {
   cart?: Maybe<CartsResponse>;
   me?: Maybe<ProfileResponse>;
   order?: Maybe<OrdersResponse>;
+  paymentOption?: Maybe<PaymentOptionResponse>;
   products?: Maybe<ProductsResponse>;
   shippingAddress?: Maybe<ShippingAddressResponse>;
   shops?: Maybe<ShopsResponse>;
@@ -243,6 +278,11 @@ export type Query = {
 export type QueryOrderArgs = {
   as_shop: Scalars['Boolean'];
   id?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryPaymentOptionArgs = {
+  request?: InputMaybe<GetPaymentOptionRequest>;
 };
 
 
@@ -475,6 +515,7 @@ export type ResolversTypes = ResolversObject<{
   District: ResolverTypeWrapper<District>;
   ErrorResponse: ResolverTypeWrapper<ErrorResponse>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
+  GetPaymentOptionRequest: GetPaymentOptionRequest;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   MakeOrderRequest: MakeOrderRequest;
   Mutation: ResolverTypeWrapper<{}>;
@@ -484,6 +525,10 @@ export type ResolversTypes = ResolversObject<{
   OrdersResponse: ResolversTypes['ErrorResponse'] | ResolversTypes['Order'] | ResolversTypes['OrderList'];
   PaginationRequest: PaginationRequest;
   PaginationResponse: ResolverTypeWrapper<PaginationResponse>;
+  PaymentOption: ResolverTypeWrapper<PaymentOption>;
+  PaymentOptionList: ResolverTypeWrapper<PaymentOptionList>;
+  PaymentOptionResponse: ResolversTypes['ErrorResponse'] | ResolversTypes['PaymentOptionList'];
+  PaymentType: PaymentType;
   Product: ResolverTypeWrapper<Product>;
   ProductList: ResolverTypeWrapper<ProductList>;
   ProductsResponse: ResolversTypes['ErrorResponse'] | ResolversTypes['ProductList'];
@@ -523,6 +568,7 @@ export type ResolversParentTypes = ResolversObject<{
   District: District;
   ErrorResponse: ErrorResponse;
   Float: Scalars['Float'];
+  GetPaymentOptionRequest: GetPaymentOptionRequest;
   Int: Scalars['Int'];
   MakeOrderRequest: MakeOrderRequest;
   Mutation: {};
@@ -532,6 +578,9 @@ export type ResolversParentTypes = ResolversObject<{
   OrdersResponse: ResolversParentTypes['ErrorResponse'] | ResolversParentTypes['Order'] | ResolversParentTypes['OrderList'];
   PaginationRequest: PaginationRequest;
   PaginationResponse: PaginationResponse;
+  PaymentOption: PaymentOption;
+  PaymentOptionList: PaymentOptionList;
+  PaymentOptionResponse: ResolversParentTypes['ErrorResponse'] | ResolversParentTypes['PaymentOptionList'];
   Product: Product;
   ProductList: ProductList;
   ProductsResponse: ResolversParentTypes['ErrorResponse'] | ResolversParentTypes['ProductList'];
@@ -669,6 +718,24 @@ export type PaginationResponseResolvers<ContextType = any, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type PaymentOptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['PaymentOption'] = ResolversParentTypes['PaymentOption']> = ResolversObject<{
+  active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  logo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['PaymentType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PaymentOptionListResolvers<ContextType = any, ParentType extends ResolversParentTypes['PaymentOptionList'] = ResolversParentTypes['PaymentOptionList']> = ResolversObject<{
+  paymentOptions?: Resolver<Maybe<Array<Maybe<ResolversTypes['PaymentOption']>>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PaymentOptionResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['PaymentOptionResponse'] = ResolversParentTypes['PaymentOptionResponse']> = ResolversObject<{
+  __resolveType: TypeResolveFn<'ErrorResponse' | 'PaymentOptionList', ParentType, ContextType>;
+}>;
+
 export type ProductResolvers<ContextType = any, ParentType extends ResolversParentTypes['Product'] = ResolversParentTypes['Product']> = ResolversObject<{
   created_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   deleted_at?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -707,6 +774,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   cart?: Resolver<Maybe<ResolversTypes['CartsResponse']>, ParentType, ContextType>;
   me?: Resolver<Maybe<ResolversTypes['ProfileResponse']>, ParentType, ContextType>;
   order?: Resolver<Maybe<ResolversTypes['OrdersResponse']>, ParentType, ContextType, RequireFields<QueryOrderArgs, 'as_shop'>>;
+  paymentOption?: Resolver<Maybe<ResolversTypes['PaymentOptionResponse']>, ParentType, ContextType, Partial<QueryPaymentOptionArgs>>;
   products?: Resolver<Maybe<ResolversTypes['ProductsResponse']>, ParentType, ContextType, Partial<QueryProductsArgs>>;
   shippingAddress?: Resolver<Maybe<ResolversTypes['ShippingAddressResponse']>, ParentType, ContextType>;
   shops?: Resolver<Maybe<ResolversTypes['ShopsResponse']>, ParentType, ContextType, Partial<QueryShopsArgs>>;
@@ -824,6 +892,9 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   OrderList?: OrderListResolvers<ContextType>;
   OrdersResponse?: OrdersResponseResolvers<ContextType>;
   PaginationResponse?: PaginationResponseResolvers<ContextType>;
+  PaymentOption?: PaymentOptionResolvers<ContextType>;
+  PaymentOptionList?: PaymentOptionListResolvers<ContextType>;
+  PaymentOptionResponse?: PaymentOptionResponseResolvers<ContextType>;
   Product?: ProductResolvers<ContextType>;
   ProductList?: ProductListResolvers<ContextType>;
   ProductsResponse?: ProductsResponseResolvers<ContextType>;

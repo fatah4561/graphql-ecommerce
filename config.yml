@@ -1,3 +1,5 @@
 app:
   timezone: Asia/Jakarta
   tokenExpiration: 8h
+payment:
+  defaultGateway: ipaymu # change here if you want to use another gateway

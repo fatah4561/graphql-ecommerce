@@ -14,8 +14,6 @@ export const shippingAddressQuery: QueryResolvers["shippingAddress"] = async (_,
             throw APIError.notFound("data not found")
         }
 
-        console.log("achi", shippingAddresses)
-
         return {
             shippingAddresses: shippingAddresses.map(address => ({ ...address }))
         }

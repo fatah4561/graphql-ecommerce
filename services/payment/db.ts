@@ -10,6 +10,13 @@ const orm = knex({
     connection: PaymentDB.connectionString
 })
 
+export enum PaymentStatus {
+    PENDING = 0, // init, created
+    PAID = 1,
+    FAILED = 2,
+    CANCELLED = 3,
+}
+
 export type PaymentEntity = {
     id?: number
     order_id?: number
@@ -19,6 +26,7 @@ export type PaymentEntity = {
     amount?: number
     status?: string
     metadata?: string
+    note?: string // might be use on cancel or failed detail
     created_at?: string
 }
 

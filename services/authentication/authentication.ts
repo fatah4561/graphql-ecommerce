@@ -1,4 +1,4 @@
-import { api, APIError, ErrCode } from "encore.dev/api"
+import { api, APIError } from "encore.dev/api"
 import { user as userClient } from "~encore/clients"
 import { secret } from "encore.dev/config"
 
@@ -137,6 +137,6 @@ export async function generateToken(user: UserEntity, shop?: ShopEntity): Promis
         setIssuedAt().
         setIssuer(packageJson.name).
         setAudience(packageJson.name).
-        setExpirationTime(appConfig().tokenExpiration ?? '4h').
+        setExpirationTime(appConfig().app.tokenExpiration ?? '4h').
         sign(privateKey)
 }

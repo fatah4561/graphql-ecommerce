@@ -25,6 +25,8 @@ const resolvers: Resolvers = {
     ShippingAddressResponse: resolve_type.shippingAddressResponseResolver,
 
     OrdersResponse: resolve_type.ordersResponseResolver,
+
+    PaymentOptionResponse: resolve_type.paymentOptionResponseResolver,
 };
 
 export default resolvers;

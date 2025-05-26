@@ -1,5 +1,6 @@
 import { api } from "encore.dev/api";
 import { PaymentEntity, Payments } from "./db";
+import { PaymentOption } from "../../graphql/__generated__/resolvers-types";
 
 // this is where the payment hit 3rd party gateway
 export const initPayment = api(
@@ -20,6 +21,14 @@ export const inqPayment = api(
     }
 )
 
+export const getPaymentOptions = api(
+    { method: "GET", path: "/pay/option" },
+    async ({ fields }: { fields: string }): Promise<{ paymentOptions: PaymentOption[] }> => {
+        // TODO
+        return { paymentOptions: [] }
+    }
+)
+
 export const createPayment = api(
     { method: "POST", path: "/pay" },
     async ({ request }: { request: PaymentEntity }): Promise<{ paymentId: number }> => {
@@ -35,5 +44,14 @@ export const createPayment = api(
         const payment = (await Payments().insert(newPayment, "*"))[0]
 
         return { paymentId: Number(payment.id) }
+    }
+)
+
+export const callbackPayment = api(
+    { method: "POST", path: "/payment-callback" },
+    async ({ request }: { request: any }): Promise<{ }> => {
+        // TODO
+
+        return { }
     }
 )

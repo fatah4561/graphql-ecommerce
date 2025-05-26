@@ -1,0 +1,38 @@
+# request & response
+input GetPaymentOptionRequest {
+    id: Int
+    type: PaymentType
+    active: Boolean
+}
+
+union PaymentOptionResponse = PaymentOptionList | ErrorResponse
+
+type PaymentOptionList {
+    paymentOptions: [PaymentOption]
+}
+
+# model
+enum PaymentType {
+    CREDIT_CARD       # e.g., Visa, Mastercard
+    DEBIT_CARD        # e.g., BRI Debit
+    BANK_TRANSFER     # e.g., BCA VA, Mandiri
+    QR_PAYMENT        # e.g., QRIS, Alipay, UPI
+    E_WALLET           # e.g., OVO, GoPay, PayPal
+    CASH              # COD or physical payment
+    INSTALLMENT       # PayLater, Kredivo, AfterPay
+    CRYPTO            # (Optional) BTC, ETH, etc.
+    OTHER             # Fallback for unknown types
+}
+
+type PaymentOption {
+    id: Int!
+    name: String!
+    type: PaymentType!
+    logo: String
+    active: Boolean!
+} 
+
+# action
+extend type Query {
+    paymentOption(request: GetPaymentOptionRequest): PaymentOptionResponse
+}

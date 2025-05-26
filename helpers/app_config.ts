@@ -2,20 +2,27 @@ import fs  from "fs"
 import YAML from "yaml"
 
 interface AppConfig {
-    timezone: string;
-    tokenExpiration: string;
+    app: {
+        timezone: string
+        tokenExpiration: string
+    }
+    payment: PaymentConfig
 }
 
-function loadApConfig() {
+interface PaymentConfig {
+    defaultGateway: string
+}
+
+function loadAppConfig() {
     let cachedConfig: AppConfig | null = null;
     
     return (): AppConfig => {
         if (!cachedConfig) {
             const file = fs.readFileSync("./config.yml", "utf-8");
-            cachedConfig = YAML.parse(file).app as AppConfig;
+            cachedConfig = YAML.parse(file) as AppConfig;
         }
         return cachedConfig;
     };
 }
 
-export const appConfig = loadApConfig();
+export const appConfig = loadAppConfig();

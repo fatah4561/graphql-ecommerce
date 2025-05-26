@@ -168,7 +168,7 @@ export const deleteMultiCart = api(
     }
 )
 
-// TODO edge case if user was a guest then login check if the cart product is your own product then delete from cart
+// edge case if user was a guest then login check if the cart product is your own product then delete from cart
 // this is supposed to be run as background not exposed
 export const deleteYourOwnProductCart = api(
     { method: "POST", path: "/carts/delete-your-own-product" },

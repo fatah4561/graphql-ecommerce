@@ -35,7 +35,7 @@ export const emptyError = (): ErrorResponse => {
  * Here I attempt to log it if it's rust error and return it as internal APIError
  * e.g. "An internal error occurred.: InvalidArg, Failed to convert js number to serde_json::Number"
  * 
- *  If it's safe error (APIError type then return it)
+ *  If it's safe error (APIError type) then return it
  * @param err any
  * @returns APIError
  */
