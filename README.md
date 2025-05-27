@@ -3,13 +3,13 @@
 ## About
 
 This project is a feature-rich GraphQL e-commerce backend built with **Encore.ts** and **Apollo Server**.
-It serves as my personal learning journal for **TypeScript, GraphQL, and Encore.ts** on the backend. 
+It serves as my personal learning journal for **TypeScript, GraphQL, and Encore.ts** on the backend.
 While this project aimed to be production ready it is not recommended to deploy to production as it is, some configuration is required before deploying to production contact me for details.
 
 I designed this project with a strong emphasis on:
 
-✅ Readability & Maintainability\
-✅ Clean Code & Separation of Concerns (SoC)\
+✅ Readability & Maintainability
+✅ Clean Code & Separation of Concerns (SoC)
 ✅ Flexibility to Adapt into a REST API (thanks to encore, might still need some modifications)
 
 Basic Features
@@ -76,24 +76,16 @@ encore run
 
 While `encore run` is running, open [http://localhost:9400/](http://localhost:9400/) to view Encore's [local developer dashboard](https://encore.dev/docs/ts/observability/dev-dash). While the API endpoint should be [http://127.0.0.1:4000](http://127.0.0.1:4000) if no config was changed. Running encore will automatically run the migration to the database, I also have included the seeder so you can play around with dummy data, to access encore database you can consult the guide [here](https://encore.dev/docs/ts/primitives/databases).
 
-Next make sure to set secret for the JWK_PUBLIC_KEY (SPKI format) and JWK_PRIVATE_KEY (PKCS8Pem format) using
+Next fill up the example.env values and rename it to .env then run this command to load .env to encore secret
 
 ```zsh
-encore set --type dev,local JWK_PRIVATE_KEY
+npm run load-env
 ```
 
 Just in case the generated GraphQL code is not up to date then run
 
 ```zsh
 npm run generate
-```
-
-## Notes
-
-setting encore secret might get stuck if values is too long, solution is to use input redirection:
-
-```zsh
-cat private.txt | encore secret set --type dev,local JWK_PRIVATE_KEY
 ```
 
 ## Code design notes
